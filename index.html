@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>SwitchLens - Penjelajah Aset Visual Pexels & Pixabay</title>
+  <meta name="description" content="Temukan dan unduh jutaan foto serta video berkualitas tinggi secara gratis. SwitchLens menggabungkan API Pexels & Pixabay dengan fitur koleksi favorit lokal tanpa batas.">
+  <meta name="keywords" content="SwitchLens, Pexels API, Pixabay API, free stock photos, stock videos, open source media finder, Iyan99">
+  <meta name="author" content="Iyan99">
+  <meta name="robots" content="index, follow">
+  <link rel="canonical" href="https://switchlens.vercel.app/">
+
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://switchlens.vercel.app/">
+  <meta property="og:title" content="SwitchLens - Jajaki Visual Tanpa Batas">
+  <meta property="og:description" content="Platform modern penjelajah aset gambar dan video yang ditenagai oleh integrasi dual API Pexels & Pixabay. Ringan, cepat, dan responsif.">
+  <meta property="og:image" content="https://switchlens.vercel.app/assets/og-preview.png">
+  <meta property="og:locale" content="id_ID">
+
+  <meta property="twitter:card" content="summary_large_image">
+  <meta property="twitter:url" content="https://switchlens.vercel.app/">
+  <meta property="twitter:title" content="SwitchLens - Jajaki Visual Tanpa Batas">
+  <meta property="twitter:description" content="Gabungan repositori aset visual terbaik dari Pexels dan Pixabay secara simultan dengan optimasi Infinite Scroll.">
+  <meta property="twitter:image" content="https://switchlens.vercel.app/assets/og-preview.png">
+
+  <link rel="icon" type="image/png" href="/icons/favicon-96x96.png" sizes="96x96" />
+  <link rel="icon" type="image/svg+xml" href="/icons/favicon.svg" />
+  <link rel="shortcut icon" href="/icons/favicon.ico" />
+  <link rel="apple-touch-icon" sizes="180x180" href="/icons/apple-touch-icon.png" />
+  <meta name="apple-mobile-web-app-title" content="SwitchLens" />
+  <link rel="manifest" href="/icons/site.webmanifest" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+  
+  <meta name="google-site-verification" content="WxDj8l9F1ZDV_EmsvDcZfuHmyfCdKsSxDBabFustOgk" />
+  
+  <link rel="stylesheet" href="css/landing.css">
+</head>
+
+<body data-theme="light">
+  <div class="theme-switch-container">
+    <span class="theme-label-text">Mode</span>
+    <label class="theme-switch">
+      <input id="themeToggle" type="checkbox">
+      <span class="theme-slider">
+        <span class="theme-icon sun-icon">☀️</span>
+        <span class="theme-icon moon-icon">🌙</span>
+      </span>
+    </label>
+  </div>
+  <header class="hero-section">
+    <div class="hero-container">
+      <div class="brand-badge">Introducing SwitchLens v2</div>
+      <h1 class="hero-title">
+        Jajaki Visual Tanpa Batas Bersama <span class="highlight">Switch<span class="lens">Lens</span></span>
+      </h1>
+      <p class="hero-subtitle">
+        Platform penjelajah aset visual modern yang responsif, ringan, dan ditenagai langsung oleh kolaborasi data <b>Pexels</b> & <b>Pixabay</b> API kelas dunia. Didesain untuk efisiensi pencarian gambar dan video tingkat tinggi.
+      </p>
+      
+      <div class="cta-group" style="display: flex; gap: 15px; justify-content: center; flex-wrap: wrap;">
+        <a href="home.html" class="btn btn-primary">
+          Jelajahi Foto & Video
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+        </a>
+        <button id="openTokenModalBtn" class="btn" style="background: transparent; border: 2px solid #00bcd4; color: #00bcd4; cursor: pointer; border-radius: 8px; font-weight: 600; padding: 12px 24px; display: flex; align-items: center; gap: 8px;">
+          ⚙️ Atur API Key
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <section class="features-section">
+    <div class="section-title-wrapper">
+      <h2>Fitur & Keunggulan Sistem</h2>
+      <p class="desk">Arsitektur web modern yang dirancang untuk performa maksimal.</p>
+    </div>
+    
+    <div class="features-grid">
+      <div class="feature-card">
+        <div class="icon-box">⚡</div>
+        <h3>Lazy Loading Optimization</h3>
+        <p>Gambar hanya dimuat saat masuk ke dalam layar (viewport), menghemat kuota internet dan mempercepat render awal halaman secara drastis.</p>
+      </div>
+
+      <div class="feature-card">
+        <div class="icon-box">🔀</div>
+        <h3>Dual API Provider Integration</h3>
+        <p>Menggabungkan repositori aset terbaik dari Pexels dan Pixabay secara simultan, memberikan variasi hasil pencarian foto dan video yang jauh lebih melimpah.</p>
+      </div>
+
+      <div class="feature-card">
+        <div class="icon-box">📱</div>
+        <h3>Infinite Scroll Grid</h3>
+        <p>Navigasi tanpa batas yang memanfaatkan Intersection Observer API untuk memuat konten secara otomatis begitu Anda mencapai batas bawah halaman.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="creator-section">
+    <div class="creator-card">
+      <div class="creator-info">
+        <span class="badge">The Developer</span>
+        <h2 class="behindTheCode">Behind The Code</h2>
+        <p>
+          Aplikasi ini dirancang, dibangun, dan dioptimasi sepenuhnya oleh <strong>Iyan99</strong> sebagai proyek portofolio pengembangan aplikasi berbasis web yang responsif, adaptif, dan berstandar industri.
+        </p>
+        <div class="tech-stack">
+          <span>HTML5</span>
+          <span>CSS3 (Grid/Flex)</span>
+          <span>Vanilla JavaScript</span>
+          <span>Pexels & Pixabay API</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="token-modal" id="landingTokenModal">
+      <div class="modal-box">
+          <h2>API Setup</h2>
+          <p style="font-size: 0.9rem; color: #aaa; margin-bottom: 15px;">
+              Masukkan minimal salah satu token untuk menikmati fitur. Kamu bisa menambahkan atau memperbarui token kapan saja.
+          </p>
+          
+          <label style="display:block; text-align:left; margin-bottom:5px; font-weight:bold; font-size:0.85rem;">Pexels API Key:</label>
+          <input id="tokenInputPexels" type="text" placeholder="Kosongkan jika tidak ada">
+          
+          <label style="display:block; text-align:left; margin-bottom:5px; font-weight:bold; font-size:0.85rem;">Pixabay API Key:</label>
+          <input id="tokenInputPixabay" type="text" placeholder="Kosongkan jika tidak ada">
+          
+          <div style="display: flex; gap: 12px; justify-content: space-between; margin-top: 24px; align-items: center; flex-wrap: wrap;">
+            
+          <a href="guide.html" class="link-guide">Belum ada API Key?</a>
+          <div class="modal-btn-group" style="display: flex; gap: 10px;">
+            <button id="closeModalBtn" class="btn-modal btn-modal-secondary">Batal</button>
+            <button id="saveToken" class="btn-modal btn-modal-primary">Simpan</button>
+          </div>
+        </div>
+      </div>
+  </div>
+  
+  <div class="token-modal" id="messageModal">
+      <div class="modal-box" style="text-align: center; max-width: 380px; padding: 30px 25px;">
+          <h2 id="messageTitle" style="color: var(--text-primary); margin-bottom: 12px; font-size: 1.4rem;">Pemberitahuan</h2>
+          <p id="messageBody" style="font-size: 0.95rem; color: var(--text-secondary); margin-bottom: 25px; line-height: 1.6;">Pesan di sini</p>
+          <button id="closeMessageBtn">Tutup</button>
+      </div>
+  </div>
+
+  <footer>
+    <p>&copy; 2026 | Built by Iyan99 | Powered by Pexels & Pixabay API.</p>
+  </footer>
+
+  <script src="js/landing.js" defer></script>
+  <script src="js/register-sw.js" defer></script>
+</body>
+</html>
