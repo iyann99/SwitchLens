@@ -46,9 +46,7 @@ async function getVideos(query, pageNum, language) {
                     } else if (pixabayRes.ok) {
                         const data = await pixabayRes.json();
                         pixabayVideos = data.hits.map(vid => {
-                            // Thumbnail asli Pixabay ada di videos.<size>.thumbnail.
-                            // Video Pixabay TIDAK di-host di Vimeo, jadi format URL
-                            // Vimeo sebelumnya salah total dan gambar tidak pernah muncul.
+
                             const thumb =
                                 vid.videos?.medium?.thumbnail ||
                                 vid.videos?.small?.thumbnail ||
@@ -110,7 +108,7 @@ async function getVideos(query, pageNum, language) {
 
             card.innerHTML = `
                 <div class="image-wrapper">
-                    <img src="${thumbnail}" alt="${title}" loading="lazy" onerror="this.onerror=null; this.src='assets/no-image.jpg';">
+                    <img src="${thumbnail}" alt="${title}" loading="lazy" class="lazy-photo-img">
                     <div class="play-icon" style="position:absolute; top:50%; left:50%; transform:translate(-50%, -50%); font-size:2rem; color:white; text-shadow: 0 0 10px rgba(0,0,0,0.5); pointer-events:none;">&#9658;</div>
                 </div>
                 <div class="card-info">
@@ -130,6 +128,13 @@ async function getVideos(query, pageNum, language) {
         });
 
         gallery.appendChild(fragment);
+
+        gallery.querySelectorAll('.lazy-photo-img').forEach(img => {
+            img.addEventListener('error', function onImgError() {
+                this.removeEventListener('error', onImgError);
+                this.src = 'assets/no-image.jpg';
+            });
+        });
 
     } catch (err) {
         if (pageNum === 1) {

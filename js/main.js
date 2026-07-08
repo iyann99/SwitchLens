@@ -110,7 +110,7 @@ async function getPhotos(query, pageNum, language) {
 
             card.innerHTML = `
                 <div class="image-wrapper">
-                    <img src="${medium}" data-highres="${large}" alt="${alt || 'Photo'}" loading="lazy" onerror="this.onerror=null; this.src='assets/no-image.jpg';">
+                    <img src="${medium}" data-highres="${large}" alt="${alt || 'Photo'}" loading="lazy" class="lazy-photo-img">
                 </div>
                 <div class="card-info">
                     <h3 class="card-title">${alt || 'Untitled'}</h3>
@@ -134,6 +134,13 @@ async function getPhotos(query, pageNum, language) {
         });
 
         gallery.appendChild(fragment);
+
+        gallery.querySelectorAll('.lazy-photo-img').forEach(img => {
+            img.addEventListener('error', function onImgError() {
+                this.removeEventListener('error', onImgError);
+                this.src = 'assets/no-image.jpg';
+            });
+        });
 
     } catch (err) {
         console.error("Gagal mengambil foto:", err);

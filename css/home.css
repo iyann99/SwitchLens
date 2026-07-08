@@ -841,3 +841,8 @@ footer {
   text-align: center;
   display: inline-block;
 }
+
+.photographer-link {
+  text-decoration: none;
+  color: var(--text-primary);
+}

@@ -34,7 +34,7 @@ document.addEventListener("DOMContentLoaded", async () => {
                         data-highres="${item.highres}"
                         alt="${item.title}"
                         loading="lazy"
-                        onerror="this.onerror=null;this.src='assets/no-image.jpg';">
+                        class="lazy-photo-img">
 
                     ${
                         item.type === "video"
@@ -89,6 +89,13 @@ document.addEventListener("DOMContentLoaded", async () => {
         });
 
         gallery.appendChild(fragment);
+
+        gallery.querySelectorAll('.lazy-photo-img').forEach(img => {
+            img.addEventListener('error', function onImgError() {
+                this.removeEventListener('error', onImgError);
+                this.src = 'assets/no-image.jpg';
+            });
+        });
     }
 
     function filterAndSort() {

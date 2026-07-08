@@ -1,4 +1,11 @@
 document.addEventListener('DOMContentLoaded', () => {
+    document.querySelectorAll('.guide-img').forEach(img => {
+        img.addEventListener('error', function onImgError() {
+            this.removeEventListener('error', onImgError);
+            this.src = 'assets/no-image.jpg';
+        });
+    });
+
     const sliders = document.querySelectorAll('.screenshot-slider');
     
     let lightbox = document.getElementById('guideLightbox');
