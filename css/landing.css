@@ -116,6 +116,11 @@ body[data-theme="dark"] .brand-badge {
   margin-right: auto;
 }
 
+.hero-subtitle a {
+  color: var(--text-secondary);
+  text-decoration: none;
+}
+
 .cta-group {
   display: flex;
   justify-content: center;
@@ -253,6 +258,11 @@ body[data-theme="dark"] .brand-badge {
 .creator-info p {
   color: #b3cfc4;
   margin-bottom: 25px;
+}
+
+.creator-info a {
+  color: #b3cfc4;
+  text-decoration: none;
 }
 
 .tech-stack {

@@ -42,22 +42,30 @@ document.addEventListener("DOMContentLoaded", () => {
 async function downloadMedia(url, filename) {
     try {
         showMessageModal("Mengunduh", "Memulai proses unduh file (Bisa memakan waktu tergantung ukuran file). Silakan tunggu...", false);
-        const response = await fetch(url);
+
+        const safeFilename = (filename || "SwitchLens-Media").replace(/[^a-zA-Z0-9._-]/g, "_");
+        const proxyUrl = `${WORKER_BASE_URL}/download?url=${encodeURIComponent(url)}&filename=${encodeURIComponent(safeFilename)}`;
+
+        const response = await fetch(proxyUrl);
+        if (!response.ok) {
+            throw new Error("Proxy download gagal");
+        }
+
         const blob = await response.blob();
         const blobUrl = URL.createObjectURL(blob);
-        
+
         const link = document.createElement("a");
         link.href = blobUrl;
-        link.download = filename || "SwitchLens-Media";
+        link.download = safeFilename;
         document.body.appendChild(link);
         link.click();
         document.body.removeChild(link);
         URL.revokeObjectURL(blobUrl);
-        
+
         document.getElementById("messageModal").style.display = "none";
     } catch (error) {
         console.error("Gagal mengunduh:", error);
-        showMessageModal("Gagal", "File tidak dapat diunduh langsung (terhalang proteksi CORS server). Silakan buka gambar secara penuh dan simpan manual.");
+        showMessageModal("Gagal", "File tidak dapat diunduh saat ini. Silakan buka gambar secara penuh dan simpan manual.");
     }
 }
 
@@ -302,7 +310,7 @@ if (closeModalBtn) {
     closeModalBtn.addEventListener('click', hideModal);
 }
 
-const MAX_FREE_CONTENT = 1000;
+const MAX_FREE_CONTENT = 100;
 
 function getFreeUsage() {
     return parseInt(localStorage.getItem('switchlens_free_usage')) || 0;
@@ -382,23 +390,38 @@ document.addEventListener("DOMContentLoaded", async () => {
 
 
 function renderAuthNav() {
-    const slot = document.getElementById('authNavSlot');
-    if (!slot) return;
+    const navContainer = document.querySelector('.navContainerBtn');
+    if (!navContainer) return;
 
-    slot.innerHTML = "";
+    const existing = navContainer.querySelector('.auth-nav-btn');
+    if (existing) existing.remove();
 
     const authBtn = document.createElement(isLoggedIn() ? 'button' : 'a');
-    authBtn.className = 'btn-history-action auth-nav-btn';
 
     if (isLoggedIn()) {
         authBtn.textContent = 'Keluar';
-        authBtn.addEventListener('click', () => logout());
+        authBtn.className = 'btnVideo auth-nav-btn';
+        authBtn.style.background = 'transparent';
+        authBtn.style.color = 'var(--lens-color)';
+        authBtn.style.border = '1px solid var(--lens-color)';
+        authBtn.addEventListener('click', () => {
+            logout();
+        });
     } else {
-        authBtn.textContent = 'Masuk / Daftar';
+        authBtn.textContent = 'Masuk';
         authBtn.href = 'login.html';
+        authBtn.className = 'btnVideo auth-nav-btn';
+        authBtn.style.textDecoration = 'none';
+        authBtn.style.display = 'inline-block';
     }
 
-    slot.appendChild(authBtn);
+
+    const menuBtn = document.getElementById('menuBtn');
+    if (menuBtn) {
+        navContainer.insertBefore(authBtn, menuBtn);
+    } else {
+        navContainer.appendChild(authBtn);
+    }
 }
 
 window.addEventListener('offline', () => {
