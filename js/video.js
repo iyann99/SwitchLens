@@ -45,13 +45,25 @@ async function getVideos(query, pageNum, language) {
                         handleUnauthorizedError('Pixabay');
                     } else if (pixabayRes.ok) {
                         const data = await pixabayRes.json();
-                        pixabayVideos = data.hits.map(vid => ({
-                            provider: 'Pixabay',
-                            author: vid.user,
-                            title: vid.tags || 'Pixabay Video',
-                            thumbnail: `https://i.vimeocdn.com/video/${vid.picture_id}_640x360.jpg`,
-                            videoSrc: vid.videos.medium?.url || vid.videos.small?.url
-                        }));
+                        pixabayVideos = data.hits.map(vid => {
+                            // Thumbnail asli Pixabay ada di videos.<size>.thumbnail.
+                            // Video Pixabay TIDAK di-host di Vimeo, jadi format URL
+                            // Vimeo sebelumnya salah total dan gambar tidak pernah muncul.
+                            const thumb =
+                                vid.videos?.medium?.thumbnail ||
+                                vid.videos?.small?.thumbnail ||
+                                vid.videos?.large?.thumbnail ||
+                                vid.videos?.tiny?.thumbnail ||
+                                'assets/no-image.jpg';
+
+                            return {
+                                provider: 'Pixabay',
+                                author: vid.user,
+                                title: vid.tags || 'Pixabay Video',
+                                thumbnail: thumb,
+                                videoSrc: vid.videos.medium?.url || vid.videos.small?.url
+                            };
+                        });
                     }
                 } catch (e) { console.error(e); }
             }

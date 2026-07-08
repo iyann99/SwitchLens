@@ -97,12 +97,16 @@ async function getPhotos(query, pageNum, language) {
         }
 
         const fragment = document.createDocumentFragment();
-        combinedPhotos.forEach(({ photographer, alt, medium, large, provider }) => {
+        combinedPhotos.forEach(({ photographer, alt, medium, large, provider, profileUrl, downloadLocation }) => {
             const card = document.createElement("div");
             card.className = "media-card photo-card";
             
             const favStatus = isFavorite(medium) ? '❤️' : '🤍';
             const favClass = isFavorite(medium) ? 'active' : '';
+
+            const attributionHtml = profileUrl
+                ? `<a href="${profileUrl}" target="_blank" rel="noopener noreferrer" class="photographer-link">${photographer}</a> (${provider})`
+                : `${photographer} (${provider})`;
 
             card.innerHTML = `
                 <div class="image-wrapper">
@@ -111,12 +115,12 @@ async function getPhotos(query, pageNum, language) {
                 <div class="card-info">
                     <h3 class="card-title">${alt || 'Untitled'}</h3>
                     <div class="card-footer">
-                        <span class="api-tag">${photographer} (${provider})</span>
+                        <span class="api-tag">${attributionHtml}</span>
                         <div class="card-actions">
                             <button class="action-btn btn-fav ${favClass}" data-type="photo" data-src="${medium}" data-highres="${large}" data-title="${alt || 'Untitled'}" data-author="${photographer}" data-provider="${provider}">
                                 ${favStatus}
                             </button>
-                            <button class="action-btn btn-download" data-url="${large}">⬇️</button>
+                            <button class="action-btn btn-download" data-url="${large}" ${downloadLocation ? `data-download-location="${downloadLocation}"` : ''}>⬇️</button>
                       <button class="action-btn btn-share" 
                               data-url="${large}" 
                               data-title="${alt || 'Untitled'}">

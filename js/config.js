@@ -39,12 +39,16 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 });
 
-async function downloadMedia(url, filename) {
+async function downloadMedia(url, filename, downloadLocation = null) {
     try {
         showMessageModal("Mengunduh", "Memulai proses unduh file (Bisa memakan waktu tergantung ukuran file). Silakan tunggu...", false);
 
         const safeFilename = (filename || "SwitchLens-Media").replace(/[^a-zA-Z0-9._-]/g, "_");
-        const proxyUrl = `${WORKER_BASE_URL}/download?url=${encodeURIComponent(url)}&filename=${encodeURIComponent(safeFilename)}`;
+        let proxyUrl = `${WORKER_BASE_URL}/download?url=${encodeURIComponent(url)}&filename=${encodeURIComponent(safeFilename)}`;
+
+        if (downloadLocation) {
+            proxyUrl += `&downloadLocation=${encodeURIComponent(downloadLocation)}`;
+        }
 
         const response = await fetch(proxyUrl);
         if (!response.ok) {

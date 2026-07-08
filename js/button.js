@@ -19,7 +19,7 @@ document.addEventListener("DOMContentLoaded", () => {
         const btnDl = e.target.closest('.btn-download');
         if (btnDl) {
             e.stopPropagation();
-            downloadMedia(btnDl.dataset.url, 'SwitchLens_Aset');
+            downloadMedia(btnDl.dataset.url, 'SwitchLens_Aset', btnDl.dataset.downloadLocation || null);
             return;
         }
         
