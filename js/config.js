@@ -394,38 +394,23 @@ document.addEventListener("DOMContentLoaded", async () => {
 
 
 function renderAuthNav() {
-    const navContainer = document.querySelector('.navContainerBtn');
-    if (!navContainer) return;
+    const slot = document.getElementById('authNavSlot');
+    if (!slot) return;
 
-    const existing = navContainer.querySelector('.auth-nav-btn');
-    if (existing) existing.remove();
+    slot.innerHTML = "";
 
     const authBtn = document.createElement(isLoggedIn() ? 'button' : 'a');
+    authBtn.className = 'btn-history-action auth-nav-btn';
 
     if (isLoggedIn()) {
         authBtn.textContent = 'Keluar';
-        authBtn.className = 'btnVideo auth-nav-btn';
-        authBtn.style.background = 'transparent';
-        authBtn.style.color = 'var(--lens-color)';
-        authBtn.style.border = '1px solid var(--lens-color)';
-        authBtn.addEventListener('click', () => {
-            logout();
-        });
+        authBtn.addEventListener('click', () => logout());
     } else {
-        authBtn.textContent = 'Masuk';
+        authBtn.textContent = 'Masuk / Daftar';
         authBtn.href = 'login.html';
-        authBtn.className = 'btnVideo auth-nav-btn';
-        authBtn.style.textDecoration = 'none';
-        authBtn.style.display = 'inline-block';
     }
 
-
-    const menuBtn = document.getElementById('menuBtn');
-    if (menuBtn) {
-        navContainer.insertBefore(authBtn, menuBtn);
-    } else {
-        navContainer.appendChild(authBtn);
-    }
+    slot.appendChild(authBtn);
 }
 
 window.addEventListener('offline', () => {

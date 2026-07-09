@@ -1,5 +1,5 @@
 
-const CACHE_NAME = "switchlens-cache-v1";
+const CACHE_NAME = "switchlens-cache-v2";
 
 const STATIC_ASSETS = [
   "/home.html",
@@ -54,9 +54,38 @@ self.addEventListener("fetch", (event) => {
   const isDynamicContent =
     url.hostname.includes("workers.dev") ||
     url.hostname.includes("pexels.com") ||
-    url.hostname.includes("pixabay.com");
+    url.hostname.includes("pixabay.com") ||
+    url.hostname.includes("unsplash.com");
 
   if (isDynamicContent || event.request.method !== "GET") {
+    return;
+  }
+
+  // HTML dan JS/CSS: NETWORK-FIRST.
+  // Selalu coba ambil versi terbaru dari server dulu; cache hanya
+  // dipakai sebagai fallback kalau benar-benar offline. Ini mencegah
+  // pengguna terjebak di versi lama setelah ada update kode.
+  const isNavigationOrScript =
+    event.request.mode === "navigate" ||
+    url.pathname.endsWith(".html") ||
+    url.pathname.endsWith(".js") ||
+    url.pathname.endsWith(".css");
+
+  if (isNavigationOrScript) {
+    event.respondWith(
+      fetch(event.request)
+        .then((networkResponse) => {
+          return caches.open(CACHE_NAME).then((cache) => {
+            cache.put(event.request, networkResponse.clone());
+            return networkResponse;
+          });
+        })
+        .catch(() => {
+          return caches.match(event.request).then((cachedResponse) => {
+            return cachedResponse || caches.match("/home.html");
+          });
+        })
+    );
     return;
   }
 
