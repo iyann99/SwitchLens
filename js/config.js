@@ -4,6 +4,62 @@ const WORKER_BASE_URL = "https://iyan99-as.pradikaaprilianto9.workers.dev";
 
 const gallery = document.getElementById('gallery-grid');
 
+
+const ADVANCED_TOS_KEY = "switchlens_advanced_tos_accepted";
+let advancedModeEnabled = false;
+
+function isAdvancedTosAccepted() {
+    return localStorage.getItem(ADVANCED_TOS_KEY) === "true";
+}
+
+function acceptAdvancedTos() {
+    localStorage.setItem(ADVANCED_TOS_KEY, "true");
+}
+
+function isAdvancedModeActive() {
+    return advancedModeEnabled && isLoggedIn();
+}
+
+function setAdvancedMode(enabled) {
+    advancedModeEnabled = enabled;
+    const toggleBtn = document.getElementById('advancedSearchToggle');
+    if (toggleBtn) {
+        toggleBtn.classList.toggle('active', enabled);
+        toggleBtn.textContent = enabled ? '🔓 Advanced Search: ON' : '🔒 Advanced Search';
+    }
+}
+
+function handleAdvancedSearchClick() {
+    if (!isLoggedIn()) {
+        showMessageModal("Login Diperlukan", "Silakan masuk atau daftar akun terlebih dahulu untuk menggunakan Advanced Search.");
+        return;
+    }
+
+
+    if (advancedModeEnabled) {
+        setAdvancedMode(false);
+        return;
+    }
+
+    if (isAdvancedTosAccepted()) {
+        setAdvancedMode(true);
+        return;
+    }
+
+    showAdvancedTosModal();
+}
+
+function showAdvancedTosModal() {
+    const modal = document.getElementById('advancedTosModal');
+    if (modal) modal.style.display = 'flex';
+}
+
+function hideAdvancedTosModal() {
+    const modal = document.getElementById('advancedTosModal');
+    if (modal) modal.style.display = 'none';
+}
+
+
 let page = 1;
 let loading = false;
 let currentQuery = "curated";
@@ -314,7 +370,7 @@ if (closeModalBtn) {
     closeModalBtn.addEventListener('click', hideModal);
 }
 
-const MAX_FREE_CONTENT = 100;
+const MAX_FREE_CONTENT = 10000;
 
 function getFreeUsage() {
     return parseInt(localStorage.getItem('switchlens_free_usage')) || 0;
@@ -386,6 +442,25 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     renderAuthNav();
     await loadFavoritesCache();
+
+    const advancedToggleBtn = document.getElementById('advancedSearchToggle');
+    if (advancedToggleBtn) {
+        advancedToggleBtn.addEventListener('click', handleAdvancedSearchClick);
+    }
+
+    const advancedTosAgreeBtn = document.getElementById('advancedTosAgreeBtn');
+    if (advancedTosAgreeBtn) {
+        advancedTosAgreeBtn.addEventListener('click', () => {
+            acceptAdvancedTos();
+            hideAdvancedTosModal();
+            setAdvancedMode(true);
+        });
+    }
+
+    const advancedTosCancelBtn = document.getElementById('advancedTosCancelBtn');
+    if (advancedTosCancelBtn) {
+        advancedTosCancelBtn.addEventListener('click', hideAdvancedTosModal);
+    }
 
     if (gallery && !window.location.pathname.includes('favorites.html')) {
         triggerFetch();

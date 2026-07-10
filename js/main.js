@@ -65,8 +65,15 @@ async function getPhotos(query, pageNum, language) {
         } 
         else {
             try {
-                const workerUrl = `${typeof WORKER_BASE_URL !== 'undefined' ? WORKER_BASE_URL : ''}/photos?query=${query}&page=${pageNum}&lang=${language}`;
-                const response = await fetch(workerUrl);
+                const isAdvanced = typeof isAdvancedModeActive === 'function' && isAdvancedModeActive();
+                const workerUrl = `${typeof WORKER_BASE_URL !== 'undefined' ? WORKER_BASE_URL : ''}/photos?query=${query}&page=${pageNum}&lang=${language}${isAdvanced ? '&advanced=true' : ''}`;
+
+                const fetchHeaders = {};
+                if (isAdvanced && typeof getAccessToken === 'function') {
+                    fetchHeaders['Authorization'] = `Bearer ${getAccessToken()}`;
+                }
+
+                const response = await fetch(workerUrl, { headers: fetchHeaders });
                 
                 if (response.ok) {
                     const data = await response.json();
