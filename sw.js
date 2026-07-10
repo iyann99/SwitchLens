@@ -1,12 +1,14 @@
 
-const CACHE_NAME = "switchlens-cache-v3.5";
+const CACHE_NAME = "switchlens-cache-v4";
 
 const STATIC_ASSETS = [
   "/home.html",
   "/favorites.html",
   "/guide.html",
   "/index.html",
-  "/site.webmanifest",
+  "/login.html",
+  "/register.html",
+  "/icons/site.webmanifest",
 
   "/js/config.js",
   "/js/main.js",
@@ -14,6 +16,11 @@ const STATIC_ASSETS = [
   "/js/button.js",
   "/js/favorites.js",
   "/js/landing.js",
+  "/js/guide.js",
+  "/js/auth.js",
+  "/js/search-history.js",
+  "/js/slider.js",
+  "/js/register-sw.js",
 
   "/icons/web-app-manifest-192x192.png",
   "/icons/web-app-manifest-512x512.png",
@@ -24,9 +31,15 @@ const STATIC_ASSETS = [
 self.addEventListener("install", (event) => {
   event.waitUntil(
     caches.open(CACHE_NAME).then((cache) => {
-      return cache.addAll(STATIC_ASSETS).catch((err) => {
-        console.warn("Sebagian asset gagal di-cache saat install:", err);
-      });
+      // Cache tiap file SATU PER SATU (bukan addAll yang all-or-nothing),
+      // supaya satu file 404/gagal tidak menggagalkan seluruh proses install.
+      return Promise.allSettled(
+        STATIC_ASSETS.map((assetPath) =>
+          cache.add(assetPath).catch((err) => {
+            console.warn(`Gagal cache asset: ${assetPath}`, err);
+          })
+        )
+      );
     })
   );
   self.skipWaiting();
@@ -51,13 +64,26 @@ self.addEventListener("activate", (event) => {
 self.addEventListener("fetch", (event) => {
   const url = new URL(event.request.url);
 
-  const isDynamicContent =
+  // Domain yang SUDAH DIKETAHUI sebagai sumber konten dinamis
+  // (API/Worker sendiri).
+  const isKnownDynamicAPI =
     url.hostname.includes("workers.dev") ||
     url.hostname.includes("pexels.com") ||
     url.hostname.includes("pixabay.com") ||
     url.hostname.includes("unsplash.com");
 
-  if (isDynamicContent || event.request.method !== "GET") {
+  // Gambar hasil pencarian Advanced Search (Pinterest, Bing Image, dll)
+  // bisa berasal dari DOMAIN APAPUN di internet (mengikuti sumber asli
+  // gambar tersebut, bukan CDN tetap). Domain-domain ini tidak bisa
+  // diprediksi/di-whitelist satu-satu, jadi SW tidak boleh ikut campur
+  // sama sekali pada gambar lintas-origin di luar domain aplikasi ini —
+  // biarkan browser native <img> yang menanganinya (patuh img-src CSP,
+  // bukan connect-src yang lebih ketat untuk fetch() dalam SW).
+  const isCrossOriginImage =
+    url.origin !== self.location.origin &&
+    event.request.destination === "image";
+
+  if (isKnownDynamicAPI || isCrossOriginImage || event.request.method !== "GET") {
     return;
   }
 
