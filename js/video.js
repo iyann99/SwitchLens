@@ -105,28 +105,39 @@ async function getVideos(query, pageNum, language) {
 
         const fragment = document.createDocumentFragment();
 
-        combinedVideos.forEach(({ author, title, thumbnail, videoSrc, provider }) => {
+        combinedVideos.forEach(({ author, title, thumbnail, videoSrc, provider, isExternalLink, channelUrl }) => {
             const card = document.createElement("div");
             card.className = "media-card video-card";
             card.setAttribute("data-video", videoSrc);
-            
+            if (isExternalLink) {
+                card.setAttribute("data-external-link", "true");
+            }
+
             const favStatus = isFavorite(thumbnail) ? '❤️' : '🤍';
             const favClass = isFavorite(thumbnail) ? 'active' : '';
+
+            const playIconHtml = isExternalLink
+                ? `<div class="play-icon" style="position:absolute; top:50%; left:50%; transform:translate(-50%, -50%); font-size:1.8rem; color:white; text-shadow: 0 0 10px rgba(0,0,0,0.5); pointer-events:none;">▶️</div>`
+                : `<div class="play-icon" style="position:absolute; top:50%; left:50%; transform:translate(-50%, -50%); font-size:2rem; color:white; text-shadow: 0 0 10px rgba(0,0,0,0.5); pointer-events:none;">&#9658;</div>`;
+                
+            const authorHtml = channelUrl
+                ? `<a href="${channelUrl}" target="_blank" rel="noopener noreferrer" class="channel-link">${author}</a> (${provider})`
+                : `${author} (${provider})`;
 
             card.innerHTML = `
                 <div class="image-wrapper">
                     <img src="${thumbnail}" alt="${title}" loading="lazy" class="lazy-photo-img">
-                    <div class="play-icon" style="position:absolute; top:50%; left:50%; transform:translate(-50%, -50%); font-size:2rem; color:white; text-shadow: 0 0 10px rgba(0,0,0,0.5); pointer-events:none;">&#9658;</div>
+                    ${playIconHtml}
                 </div>
                 <div class="card-info">
                     <h3 class="card-title">${title}</h3>
                     <div class="card-footer">
-                        <span class="api-tag">${author} (${provider})</span>
+                        <span class="api-tag">${authorHtml}</span>
                         <div class="card-actions">
                             <button class="action-btn btn-fav ${favClass}" data-type="video" data-src="${thumbnail}" data-highres="${videoSrc}" data-title="${title}" data-author="${author}" data-provider="${provider}" data-thumbnail="${thumbnail}">
                                 ${favStatus}
                             </button>
-                            <button class="action-btn btn-download" data-url="${videoSrc}">⬇️</button>
+                            ${isExternalLink ? '' : `<button class="action-btn btn-download" data-url="${videoSrc}">⬇️</button>`}
                         </div>
                     </div>
                 </div>
@@ -152,7 +163,67 @@ async function getVideos(query, pageNum, language) {
     }
 }
 
+function ensureYouTubeConfirmModal() {
+    let modal = document.getElementById("youtubeConfirmModal");
+    if (modal) return modal;
+
+    modal = document.createElement("div");
+    modal.id = "youtubeConfirmModal";
+    modal.className = "token-modal";
+    modal.innerHTML = `
+        <div class="modal-box" style="text-align: center; max-width: 380px; padding: 30px 25px;">
+            <h2 style="color: var(--text-primary); margin-bottom: 12px; font-size: 1.3rem;">▶️ Buka di YouTube</h2>
+            <p style="font-size: 0.92rem; color: var(--text-secondary); margin-bottom: 25px; line-height: 1.6;">
+                Video ini akan diputar langsung di YouTube. Kamu akan diarahkan keluar dari SwitchLens ke tab baru. Lanjutkan?
+            </p>
+            <div style="display: flex; gap: 10px;">
+                <button id="youtubeConfirmCancelBtn" style="flex: 1; background: transparent; color: var(--text-secondary); border: 1px solid var(--border-color, #ccc);">Batal</button>
+                <button id="youtubeConfirmProceedBtn" style="flex: 1;">Buka YouTube</button>
+            </div>
+        </div>
+    `;
+    document.body.appendChild(modal);
+    return modal;
+}
+
+function showYouTubeConfirmModal(videoUrl) {
+    const modal = ensureYouTubeConfirmModal();
+    modal.style.display = "flex";
+
+    const proceedBtn = document.getElementById("youtubeConfirmProceedBtn");
+    const cancelBtn = document.getElementById("youtubeConfirmCancelBtn");
+
+    const closeModal = () => { modal.style.display = "none"; };
+
+    const newProceedBtn = proceedBtn.cloneNode(true);
+    proceedBtn.parentNode.replaceChild(newProceedBtn, proceedBtn);
+    newProceedBtn.addEventListener("click", () => {
+        window.open(videoUrl, "_blank", "noopener,noreferrer");
+        closeModal();
+    });
+
+    const newCancelBtn = cancelBtn.cloneNode(true);
+    cancelBtn.parentNode.replaceChild(newCancelBtn, cancelBtn);
+    newCancelBtn.addEventListener("click", closeModal);
+}
+
 document.addEventListener("DOMContentLoaded", () => {
+    if (!document.getElementById("channel-link-style")) {
+        const style = document.createElement("style");
+        style.id = "channel-link-style";
+        style.textContent = `
+            .channel-link {
+                color: var(--lens-color, #00b22d);
+                font-weight: 700;
+                text-decoration: none;
+            }
+            .channel-link:hover {
+                text-decoration: underline;
+            }
+        `;
+        document.head.appendChild(style);
+    }
+
     const btnVideo = document.getElementById("modeSwitcher");
     const lightbox = document.getElementById("lightbox");
     const lightboxImg = document.getElementById("lightboxImg");
@@ -176,10 +247,22 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     gallery.addEventListener("click", (e) => {
+        if (e.target.closest(".channel-link")) {
+            e.stopPropagation();
+            return;
+        }
+
         const videoCard = e.target.closest(".video-card");
         if (videoCard && currentMode === "video") {
-            e.stopPropagation(); 
+            e.stopPropagation();
+
+            const isExternal = videoCard.getAttribute("data-external-link") === "true";
             const videoUrl = videoCard.getAttribute("data-video");
+
+            if (isExternal) {
+                showYouTubeConfirmModal(videoUrl);
+                return;
+            }
 
             if (lightboxImg) lightboxImg.style.display = "none";
 

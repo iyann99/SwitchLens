@@ -149,20 +149,57 @@
 
 <div class="token-modal" id="advancedTosModal">
     <div class="modal-box" style="text-align: left; max-width: 480px; padding: 30px 25px;">
-        <h2 style="color: var(--text-primary); margin-bottom: 12px; font-size: 1.3rem; text-align: center;">⚠️ Advanced Search (Experimental) — Syarat Penggunaan</h2>
-        <div style="font-size: 0.88rem; color: var(--text-secondary); margin-bottom: 20px; line-height: 1.7; max-height: 45vh; overflow-y: auto; padding-right: 4px;">
-            <p style="margin-bottom: 12px;">Advanced Search menambahkan hasil pencarian dari sumber pihak ketiga tambahan, termasuk Pinterest, Bing Image, dan YouTube, di luar sumber standar (Pexels, Pixabay, Unsplash) yang selalu menyertakan atribusi dan lisensi penggunaan yang jelas.</p>
-            <p style="margin-bottom: 12px;"><strong>Dengan mengaktifkan fitur ini, kamu memahami dan menyetujui bahwa:</strong></p>
-            <p style="margin-bottom: 12px;">1. Sebagian hasil pencarian (khususnya dari Bing Image) mungkin ditampilkan <strong>tanpa informasi sumber, fotografer, atau lisensi yang jelas</strong>. Asal-usul dan status hak cipta konten tersebut tidak dapat diverifikasi oleh SwitchLens.</p>
-            <p style="margin-bottom: 12px;">2. SwitchLens hanya menampilkan (menautkan) hasil pencarian dari layanan pihak ketiga ini secara apa adanya, dan tidak menyimpan, memiliki, atau mengklaim hak apapun atas konten tersebut.</p>
-            <p style="margin-bottom: 12px;">3. <strong>Segala tanggung jawab terkait penggunaan, pengunduhan, publikasi ulang, atau keperluan komersial atas konten dari sumber-sumber ini sepenuhnya berada di tangan pengguna.</strong> SwitchLens tidak bertanggung jawab atas pelanggaran hak cipta atau ketentuan pihak ketiga yang mungkin timbul dari penggunaan fitur ini.</p>
-            <p>4. Fitur ini dapat berubah atau dihentikan sewaktu-waktu apabila terjadi perubahan kebijakan dari layanan pihak ketiga terkait.</p>
-        </div>
-        <div style="display: flex; gap: 10px;">
-            <button id="advancedTosCancelBtn" style="flex: 1; background: transparent; color: var(--text-secondary); border: 1px solid var(--border-color, #ccc);">Batal</button>
-            <button id="advancedTosAgreeBtn" style="flex: 1;">Saya Setuju & Lanjutkan</button>
-        </div>
-    </div>
+      <h2 style="color: var(--text-primary); margin-bottom: 12px; font-size: 1.3rem; text-align: center;">
+          ⚠️ Advanced Search (Experimental)
+      </h2>
+  
+      <div style="font-size: 0.88rem; color: var(--text-secondary); margin-bottom: 20px; line-height: 1.7; max-height: 45vh; overflow-y: auto; padding-right: 4px;">
+  
+          <p style="margin-bottom: 12px;">
+              Advanced Search adalah fitur eksperimental yang memperluas hasil pencarian dengan menampilkan referensi dari layanan pihak ketiga, seperti Pinterest, Bing Image, dan YouTube, selain sumber utama SwitchLens (Pexels, Pixabay, dan Unsplash).
+          </p>
+  
+          <p style="margin-bottom: 12px;">
+              Karena berasal dari layanan eksternal, informasi yang tersedia pada setiap hasil dapat berbeda-beda. Dengan melanjutkan, kamu memahami bahwa:
+          </p>
+  
+          <p style="margin-bottom: 12px;">
+              <strong>1. Informasi lisensi dapat berbeda.</strong><br>
+              Tidak semua hasil menyediakan informasi mengenai fotografer, pemilik karya, sumber asli, maupun lisensi penggunaan. SwitchLens tidak dapat memverifikasi keakuratan informasi tersebut.
+          </p>
+  
+          <p style="margin-bottom: 12px;">
+              <strong>2. Konten tetap dimiliki oleh pemiliknya.</strong><br>
+              SwitchLens tidak mengunggah ulang, menyimpan, ataupun mengklaim kepemilikan atas konten yang berasal dari layanan pihak ketiga. Hasil hanya ditampilkan sebagai referensi sesuai data yang tersedia.
+          </p>
+  
+          <p style="margin-bottom: 12px;">
+              <strong>3. Pastikan memeriksa hak penggunaan.</strong><br>
+              Sebelum menggunakan gambar, video, atau media lainnya untuk keperluan publikasi, komersial, maupun distribusi ulang, pengguna disarankan memeriksa lisensi dan ketentuan penggunaan pada sumber aslinya.
+          </p>
+  
+          <p style="margin-bottom: 12px;">
+              <strong>4. Ketersediaan hasil tidak dijamin.</strong><br>
+              Hasil pencarian bergantung pada layanan pihak ketiga dan dapat berubah, dibatasi, atau dihentikan sewaktu-waktu tanpa pemberitahuan.
+          </p>
+  
+          <p>
+              Dengan mengaktifkan fitur ini, kamu menyatakan telah memahami bahwa Advanced Search merupakan fitur eksperimental dan bersedia menggunakan hasil pencarian secara bertanggung jawab sesuai ketentuan yang berlaku pada masing-masing penyedia konten.
+          </p>
+  
+      </div>
+  
+      <div style="display: flex; gap: 10px;">
+          <button id="advancedTosCancelBtn"
+              style="flex: 1; background: transparent; color: var(--text-secondary); border: 1px solid var(--border-color, #ccc);">
+              Batal
+          </button>
+  
+          <button id="advancedTosAgreeBtn" style="flex: 1;">
+              Saya Mengerti & Lanjutkan
+          </button>
+      </div>
+  </div>
 </div>
 
 <footer>
