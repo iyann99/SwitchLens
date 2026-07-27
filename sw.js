@@ -1,5 +1,5 @@
 
-const CACHE_NAME = "switchlens-cache-v4.1";
+const CACHE_NAME = "switchlens-cache-v4.2";
 
 const STATIC_ASSETS = [
   "/home.html",
@@ -31,8 +31,6 @@ const STATIC_ASSETS = [
 self.addEventListener("install", (event) => {
   event.waitUntil(
     caches.open(CACHE_NAME).then((cache) => {
-      // Cache tiap file SATU PER SATU (bukan addAll yang all-or-nothing),
-      // supaya satu file 404/gagal tidak menggagalkan seluruh proses install.
       return Promise.allSettled(
         STATIC_ASSETS.map((assetPath) =>
           cache.add(assetPath).catch((err) => {
@@ -64,33 +62,22 @@ self.addEventListener("activate", (event) => {
 self.addEventListener("fetch", (event) => {
   const url = new URL(event.request.url);
 
-  // Domain yang SUDAH DIKETAHUI sebagai sumber konten dinamis
-  // (API/Worker sendiri).
   const isKnownDynamicAPI =
     url.hostname.includes("workers.dev") ||
     url.hostname.includes("pexels.com") ||
     url.hostname.includes("pixabay.com") ||
     url.hostname.includes("unsplash.com");
 
-  // Gambar hasil pencarian Advanced Search (Pinterest, Bing Image, dll)
-  // bisa berasal dari DOMAIN APAPUN di internet (mengikuti sumber asli
-  // gambar tersebut, bukan CDN tetap). Domain-domain ini tidak bisa
-  // diprediksi/di-whitelist satu-satu, jadi SW tidak boleh ikut campur
-  // sama sekali pada gambar lintas-origin di luar domain aplikasi ini —
-  // biarkan browser native <img> yang menanganinya (patuh img-src CSP,
-  // bukan connect-src yang lebih ketat untuk fetch() dalam SW).
   const isCrossOriginImage =
     url.origin !== self.location.origin &&
     event.request.destination === "image";
 
-  if (isKnownDynamicAPI || isCrossOriginImage || event.request.method !== "GET") {
+  const isCrossOriginResource = url.origin !== self.location.origin;
+
+  if (isKnownDynamicAPI || isCrossOriginImage || isCrossOriginResource || event.request.method !== "GET") {
     return;
   }
 
-  // HTML dan JS/CSS: NETWORK-FIRST.
-  // Selalu coba ambil versi terbaru dari server dulu; cache hanya
-  // dipakai sebagai fallback kalau benar-benar offline. Ini mencegah
-  // pengguna terjebak di versi lama setelah ada update kode.
   const isNavigationOrScript =
     event.request.mode === "navigate" ||
     url.pathname.endsWith(".html") ||
