@@ -50,7 +50,7 @@
   </nav>
 
   <div id="menuBar">
-    <div class="search-wrapper">
+    <div class="search-wrapper hidden-by-floating">
       <input type="text" id="searchInput" placeholder="Cari foto atau video..." />
       <button id="searchBtn">Cari</button>
     </div>
@@ -116,6 +116,11 @@
     </div>
   </div>
 </header>
+
+<div class="floating-search-wrapper" id="floatingSearchWrapper">
+  <input type="text" id="floatingSearchInput" placeholder="Cari foto atau video..." />
+  <button id="floatingSearchBtn">Cari</button>
+</div>
 
 <main class="main-container">
   <div class="gallery-grid" id="gallery-grid">
@@ -202,12 +207,39 @@
   </div>
 </div>
 
+<button id="providerFilterFab" title="Filter Sumber">
+  <span id="providerFilterFabIcon">🔀</span>
+</button>
+
+<div class="token-modal" id="providerFilterModal">
+  <div class="modal-box" style="text-align: center; max-width: 400px; padding: 28px 22px;">
+    <h2 style="color: var(--text-primary); margin-bottom: 8px; font-size: 1.25rem;">Filter Sumber Konten</h2>
+    <p style="font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 20px; line-height: 1.5;">
+      Nonaktifkan sumber yang tidak ingin ditampilkan. Klik "Semua" untuk menampilkan ulang semua sumber.
+    </p>
+
+    <div id="providerFilterGrid" style="display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; margin-bottom: 20px;">
+      <button class="provider-filter-btn provider-all active" data-provider="all">Semua</button>
+      <button class="provider-filter-btn" data-provider="Pexels">Pexels</button>
+      <button class="provider-filter-btn" data-provider="Pixabay">Pixabay</button>
+      <button class="provider-filter-btn" data-provider="Unsplash">Unsplash</button>
+      <button class="provider-filter-btn" data-provider="Pinterest">Pinterest</button>
+      <button class="provider-filter-btn" data-provider="Bing">Bing</button>
+      <button class="provider-filter-btn" data-provider="YouTube">YouTube</button>
+    </div>
+
+    <button id="closeProviderFilterBtn" style="width: 100%;">Tutup</button>
+  </div>
+</div>
+
 <footer>
   <p>&copy; 2026 | Built by Iyan99</p>
 </footer>
 
 <script src="js/search-history.js" defer></script>
 <script src="js/slider.js" defer></script>
+<script src="js/floating-search.js" defer></script>
+<script src="js/provider-filter.js" defer></script>
 <script src="js/auth.js" defer></script>
 <script src="js/config.js" defer></script>
 <script src="js/button.js" defer></script>

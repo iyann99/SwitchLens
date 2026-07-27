@@ -149,6 +149,10 @@ async function getPhotos(query, pageNum, language) {
             });
         });
 
+        if (typeof applyProviderFilterToGallery === 'function') {
+            applyProviderFilterToGallery();
+        }
+
     } catch (err) {
         console.error("Gagal mengambil foto:", err);
         if (pageNum === 1) {

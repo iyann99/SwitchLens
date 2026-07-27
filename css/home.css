@@ -268,6 +268,7 @@ button {
   max-width: 100%;
   overflow-x: auto;
   padding-bottom: 4px;
+  touch-action: pan-x;
 }
 
 .category-tags::-webkit-scrollbar {
@@ -436,6 +437,7 @@ footer {
 }
 
 #loader {
+  display: block;
   width: 40px;
   height: 40px;
   margin: 30px auto;
@@ -759,6 +761,7 @@ footer {
   max-width: 100%;
   overflow-x: auto;
   padding-bottom: 4px;
+  touch-action: pan-x;
 }
 
 .history-tags::-webkit-scrollbar {
@@ -845,4 +848,120 @@ footer {
 .photographer-link {
   text-decoration: none;
   color: var(--text-primary);
+}
+
+.floating-search-wrapper {
+  display: flex;
+  gap: 8px;
+  max-width: 500px;
+  margin: 16px auto 0 auto;
+  padding: 0 5%;
+}
+
+.floating-search-wrapper input {
+  flex-grow: 1;
+  padding: 10px 16px;
+  border-radius: 12px;
+  border: 1px solid rgba(0, 178, 45, 0.2);
+  outline: none;
+  font-family: inherit;
+  background-color: var(--card);
+  color: var(--text-primary);
+  transition: border-color 0.2s;
+}
+
+.floating-search-wrapper input:focus {
+  border-color: var(--lens-color);
+  box-shadow: 0 0 0 3px rgba(0, 178, 45, 0.1);
+}
+
+.floating-search-wrapper button {
+  padding: 10px 20px;
+  border-radius: 12px;
+  border: none;
+  background-color: var(--lens-color);
+  color: white;
+  font-weight: 700;
+  cursor: pointer;
+  transition: opacity 0.2s;
+  white-space: nowrap;
+}
+
+.floating-search-wrapper button:hover {
+  opacity: 0.9;
+}
+
+.floating-search-wrapper.hidden {
+  display: none;
+}
+
+.search-wrapper.hidden-by-floating {
+  display: none;
+}
+
+#providerFilterFab {
+  position: fixed;
+  bottom: 24px;
+  right: 20px;
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  border: none;
+  background-color: var(--lens-color);
+  color: white;
+  font-size: 1.5rem;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.25);
+  cursor: pointer;
+  z-index: 500;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.2s ease;
+}
+
+#providerFilterFab:hover {
+  transform: scale(1.08);
+}
+
+#providerFilterFab:active {
+  transform: scale(0.95);
+}
+
+.provider-filter-btn {
+  padding: 10px 16px;
+  border-radius: 20px;
+  border: 2px solid transparent;
+  font-weight: 700;
+  font-size: 0.85rem;
+  cursor: pointer;
+  color: white;
+  transition: all 0.2s ease;
+  opacity: 1;
+}
+
+.provider-filter-btn.provider-disabled {
+  background-color: #9e9e9e !important;
+  opacity: 0.6;
+}
+
+.provider-filter-btn.provider-all { background-color: var(--lens-color); }
+.provider-filter-btn[data-provider="Pexels"] { background-color: #05a081; }
+.provider-filter-btn[data-provider="Pixabay"] { background-color: #1ba0e2; }
+.provider-filter-btn[data-provider="Unsplash"] { background-color: #111111; }
+.provider-filter-btn[data-provider="Pinterest"] { background-color: #e60023; }
+.provider-filter-btn[data-provider="Bing"] { background-color: #008373; }
+.provider-filter-btn[data-provider="YouTube"] { background-color: #ff0000; }
+
+@media (max-width: 480px) {
+  #providerFilterFab {
+    bottom: 20px;
+    right: 16px;
+    width: 50px;
+    height: 50px;
+    font-size: 1.3rem;
+  }
+
+  .floating-search-wrapper {
+    padding: 0 4%;
+  }
 }

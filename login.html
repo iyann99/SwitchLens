@@ -41,6 +41,8 @@
       <label for="password">Password</label>
       <input type="password" id="password" name="password" placeholder="Masukkan password" required autocomplete="current-password">
 
+      <div class="cf-turnstile" data-sitekey="0x4AAAAAAD-PpjPvSwIM3gjA" data-theme="light" style="margin-top: 16px;"></div>
+
       <div id="authError" class="auth-error" hidden></div>
 
       <button type="submit" id="loginSubmit">Masuk</button>
@@ -62,6 +64,7 @@
   <p>&copy; 2026 | Built by Iyan99</p>
 </footer>
 
+<script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
 <script src="js/config.js" defer></script>
 <script src="js/auth.js" defer></script>
 <script src="js/register-sw.js" defer></script>

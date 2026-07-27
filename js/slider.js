@@ -26,6 +26,11 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
   viewport.addEventListener("touchstart", (e) => {
+    if (e.target.closest(".category-tags, .history-tags")) {
+      isDragging = false;
+      return;
+    }
+
     startX = e.touches[0].clientX;
     isDragging = true;
     track.classList.add("dragging");

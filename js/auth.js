@@ -83,13 +83,19 @@ document.addEventListener("DOMContentLoaded", () => {
         return;
       }
 
+      const turnstileToken = typeof turnstile !== "undefined" ? turnstile.getResponse() : null;
+      if (!turnstileToken) {
+        showAuthError("Silakan selesaikan verifikasi keamanan (Turnstile) terlebih dahulu.");
+        return;
+      }
+
       setButtonLoading(submitBtn, true, "Memproses...", "Masuk");
 
       try {
         const response = await fetch(`${WORKER_BASE_URL}/auth/login`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ email, password })
+          body: JSON.stringify({ email, password, turnstileToken })
         });
 
         const data = await response.json();
@@ -97,6 +103,7 @@ document.addEventListener("DOMContentLoaded", () => {
         if (!data.success) {
           showAuthError(data.message || "Gagal masuk. Periksa email dan password kamu.");
           setButtonLoading(submitBtn, false, "Memproses...", "Masuk");
+          if (typeof turnstile !== "undefined") turnstile.reset();
           return;
         }
 
@@ -111,6 +118,7 @@ document.addEventListener("DOMContentLoaded", () => {
       } catch (err) {
         showAuthError("Tidak bisa terhubung ke server. Periksa koneksi internet kamu.");
         setButtonLoading(submitBtn, false, "Memproses...", "Masuk");
+        if (typeof turnstile !== "undefined") turnstile.reset();
       }
     });
   }
@@ -141,13 +149,19 @@ document.addEventListener("DOMContentLoaded", () => {
         return;
       }
 
+      const turnstileToken = typeof turnstile !== "undefined" ? turnstile.getResponse() : null;
+      if (!turnstileToken) {
+        showAuthError("Silakan selesaikan verifikasi keamanan (Turnstile) terlebih dahulu.");
+        return;
+      }
+
       setButtonLoading(submitBtn, true, "Memproses...", "Daftar");
 
       try {
         const response = await fetch(`${WORKER_BASE_URL}/auth/register`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ email, password })
+          body: JSON.stringify({ email, password, turnstileToken })
         });
 
         const data = await response.json();
@@ -155,6 +169,7 @@ document.addEventListener("DOMContentLoaded", () => {
         if (!data.success) {
           showAuthError(data.message || "Gagal mendaftar. Coba lagi.");
           setButtonLoading(submitBtn, false, "Memproses...", "Daftar");
+          if (typeof turnstile !== "undefined") turnstile.reset();
           return;
         }
 
@@ -163,6 +178,7 @@ document.addEventListener("DOMContentLoaded", () => {
       } catch (err) {
         showAuthError("Tidak bisa terhubung ke server. Periksa koneksi internet kamu.");
         setButtonLoading(submitBtn, false, "Memproses...", "Daftar");
+        if (typeof turnstile !== "undefined") turnstile.reset();
       }
     });
   }

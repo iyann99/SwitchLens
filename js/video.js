@@ -154,6 +154,10 @@ async function getVideos(query, pageNum, language) {
             });
         });
 
+        if (typeof applyProviderFilterToGallery === 'function') {
+            applyProviderFilterToGallery();
+        }
+
     } catch (err) {
         if (pageNum === 1) {
             gallery.innerHTML = '<p style="text-align:center; width:100%; color:red;">Gagal memuat video. Coba lagi.</p>';
