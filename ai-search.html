@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>Smart Search AI - SwitchLens</title>
+  <meta name="description" content="Ngobrol dengan AI untuk menemukan foto yang kamu cari di SwitchLens.">
+  <meta name="robots" content="noindex, nofollow">
+  <link rel="canonical" href="https://switchlens.vercel.app/ai-search.html">
+
+  <link rel="icon" type="image/png" href="/icons/favicon-96x96.png" sizes="96x96" />
+  <link rel="icon" type="image/svg+xml" href="/icons/favicon.svg" />
+  <link rel="shortcut icon" href="/icons/favicon.ico" />
+  <link rel="apple-touch-icon" sizes="180x180" href="/icons/apple-touch-icon.png" />
+  <meta name="apple-mobile-web-app-title" content="SwitchLens" />
+  <link rel="manifest" href="/icons/site.webmanifest" />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="css/home.css" type="text/css" media="all" />
+  <link rel="stylesheet" href="css/ai-search.css" type="text/css" media="all" />
+</head>
+
+<body data-theme="light">
+
+<header>
+  <nav>
+    <a href="home.html" class="logo-container">
+      <span class="logo1">Switch</span><span class="logo2">Lens</span>
+    </a>
+    <div class="navContainerBtn">
+      <a href="home.html" class="btn-secondary-outline">← Kembali</a>
+      <button id="newChatBtn" class="btnVideo">+ Obrolan Baru</button>
+    </div>
+  </nav>
+</header>
+
+<div class="ai-search-layout">
+
+  <aside class="ai-conversations-sidebar" id="conversationsSidebar">
+    <div class="ai-sidebar-header">
+      <span>Riwayat Obrolan</span>
+      <button id="closeSidebarBtn" class="ai-sidebar-close">✕</button>
+    </div>
+    <div id="conversationsList" class="ai-conversations-list">
+      <p class="ai-empty-note">Belum ada percakapan.</p>
+    </div>
+  </aside>
+
+  <main class="ai-chat-main">
+
+    <button id="toggleSidebarBtn" class="ai-toggle-sidebar" title="Riwayat Obrolan">☰ Riwayat</button>
+
+    <div id="chatMessages" class="ai-chat-messages">
+      <div class="ai-welcome-message">
+        <h2>👋 Halo! Aku Smart Search AI</h2>
+        <p>Ceritakan gambar seperti apa yang kamu cari, atau ajak aku ngobrol santai. Aku akan bantu carikan lewat Pexels, Pixabay, Unsplash, Wikimedia, dan sumber lain kalau Advanced Search kamu aktifkan.</p>
+      </div>
+    </div>
+
+    <div class="ai-chat-input-wrapper">
+      <label class="ai-advanced-toggle-label" title="Ikutkan Pinterest, Bing, dan YouTube dalam pencarian (perlu Advanced Search aktif)">
+        <input type="checkbox" id="aiAdvancedToggle">
+        <span>Sertakan Advanced Search</span>
+      </label>
+      <div class="ai-input-row">
+        <textarea id="chatInput" placeholder="Tulis pesan... (contoh: carikan foto pantai saat sunset)" rows="1"></textarea>
+        <button id="sendChatBtn">Kirim</button>
+      </div>
+    </div>
+
+  </main>
+
+</div>
+
+<div class="token-modal" id="messageModal">
+    <div class="modal-box" style="text-align: center; max-width: 380px; padding: 30px 25px;">
+        <h2 id="messageTitle" style="color: var(--text-primary); margin-bottom: 12px; font-size: 1.4rem;">Pemberitahuan</h2>
+        <p id="messageBody" style="font-size: 0.95rem; color: var(--text-secondary); margin-bottom: 25px; line-height: 1.6;">Pesan di sini</p>
+        <button id="closeMessageBtn">Tutup</button>
+    </div>
+</div>
+
+<script src="js/auth.js" defer></script>
+<script src="js/config.js" defer></script>
+<script src="js/ai-search.js" defer></script>
+<script src="js/register-sw.js" defer></script>
+</body>
+</html>
