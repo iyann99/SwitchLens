@@ -104,7 +104,7 @@ async function getPhotos(query, pageNum, language) {
         }
 
         const fragment = document.createDocumentFragment();
-        combinedPhotos.forEach(({ photographer, alt, medium, large, provider, profileUrl, downloadLocation }) => {
+        combinedPhotos.forEach(({ photographer, alt, medium, large, provider, profileUrl, downloadLocation, licenseInfo }) => {
             const card = document.createElement("div");
             card.className = "media-card photo-card";
             
@@ -112,7 +112,7 @@ async function getPhotos(query, pageNum, language) {
             const favClass = isFavorite(medium) ? 'active' : '';
 
             const attributionHtml = profileUrl
-                ? `<a href="${profileUrl}" target="_blank" rel="noopener noreferrer" class="photographer-link">${photographer}</a> (${provider})`
+                ? `<a href="${profileUrl}" target="_blank" rel="noopener noreferrer" class="photographer-link">${photographer}</a> (${provider}${licenseInfo ? ` · ${licenseInfo}` : ''})`
                 : `${photographer} (${provider})`;
 
             card.innerHTML = `
