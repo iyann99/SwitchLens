@@ -1,5 +1,5 @@
 
-const CACHE_NAME = "switchlens-cache-v4.5";
+const CACHE_NAME = "switchlens-cache-v5.0";
 
 const STATIC_ASSETS = [
   "/home.html",
