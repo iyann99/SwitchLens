@@ -295,6 +295,11 @@ footer {
   transition: background-color .3s ease;
 }
 
+footer a {
+  text-decoration: none;
+  color: var(--text-secondary);
+}
+
 body[data-theme="dark"] footer {
   background-color: rgba(20, 34, 27, 0.8);
   border-top: 1px solid rgba(0, 178, 45, 0.15);
