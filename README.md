@@ -259,7 +259,7 @@ SwitchLens merupakan proyek open-source yang dikembangkan sebagai proyek portofo
 
 Kode sumber SwitchLens dilisensikan di bawah MIT License. Lisensi ini mengizinkan penggunaan, penyalinan, modifikasi, dan distribusi kode dengan tetap mempertahankan pemberitahuan hak cipta dan lisensi yang berlaku.
 
-Untuk ketentuan lengkap, silakan lihat file "LICENSE" (LICENSE).
+Untuk ketentuan lengkap, silakan lihat file [![GitHub license](https://shields.io)](https://github.com).
 
 Catatan: Lisensi ini hanya berlaku untuk kode dan materi yang dibuat oleh pengembang SwitchLens. Aset, library, layanan, dan materi pihak ketiga tetap mengikuti lisensi dan ketentuan masing-masing.
 
