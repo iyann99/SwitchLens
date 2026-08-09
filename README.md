@@ -255,6 +255,12 @@ sebagai proyek portofolio pengembangan web modern, responsif, dan berorientasi k
 
 ## 📄 Lisensi
 
-Proyek ini bersifat privat dan dikembangkan untuk keperluan portofolio pribadi.
+SwitchLens merupakan proyek open-source yang dikembangkan sebagai proyek portofolio pribadi.
+
+Kode sumber SwitchLens dilisensikan di bawah MIT License. Lisensi ini mengizinkan penggunaan, penyalinan, modifikasi, dan distribusi kode dengan tetap mempertahankan pemberitahuan hak cipta dan lisensi yang berlaku.
+
+Untuk ketentuan lengkap, silakan lihat file "LICENSE" (LICENSE).
+
+Catatan: Lisensi ini hanya berlaku untuk kode dan materi yang dibuat oleh pengembang SwitchLens. Aset, library, layanan, dan materi pihak ketiga tetap mengikuti lisensi dan ketentuan masing-masing.
 
 <img src="https://capsule-render.vercel.app/api?type=waving&color=0:0a3d2c,100:00b22d&height=100&section=footer" width="100%"/>
