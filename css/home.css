@@ -35,13 +35,13 @@ body{
 }
 
 body[data-theme="light"] {
-    background-image:url("/assets/bg/bg1.png");
+    background-image:url("/assets/bg/bg1.png")!important;
     background-size:cover;
     background-position:center;
 }
 
 body[data-theme="dark"] {
-    background-image:url("/assets/bg/bg2.png");
+    background-image:url("/assets/bg/bg2.png")!important;
     background-size:cover;
     background-position:center;
 }

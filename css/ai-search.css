@@ -36,26 +36,171 @@ body {
 }
 
 body[data-theme="light"] {
-    background-image: url("/assets/bg/bg1.png");
+    background-image: url("/assets/bg/bg1.png") !important;
     background-size: cover;
     background-position: center;
 }
+
+body[data-theme="dark"] {
+    background-image: url("/assets/bg/bg2.png") !important;
+    background-size: cover;
+    background-position: center;
+}
+
 body[data-theme="light"] h2 {
     color: var(--text-primary);
 }
 
-body[data-theme="dark"] {
-    background-image: url("/assets/bg/bg2.png");
-    background-size: cover;
-    background-position: center;
-}
 body[data-theme="dark"] h2 {
-    color: #fff;
+    color: #ffffff;
+}
+
+header {
+    background-color: rgba(255, 255, 255, 0.8);
+    backdrop-filter: blur(10px);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    padding: 15px 5%;
+    border-bottom: 1px solid rgba(0, 178, 45, 0.08);
+    box-shadow: 0px 4px 20px var(--shadow);
+}
+
+nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+button {
+    user-select: none;
+}
+
+.logo-container {
+    font-size: 1.5rem;
+    text-decoration: none;
+}
+
+.logo1,
+.logo2 {
+    font-weight: 800;
+    letter-spacing: -0.5px;
+}
+
+.logo1 {
+    color: #90ee90;
+}
+
+.logo2 {
+    color: var(--lens-color);
+}
+
+.navContainerBtn {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 12px;
+}
+
+.backBtn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    background-color: transparent;
+    color: var(--text-secondary);
+    border: 2px solid rgba(0, 178, 45, 0.2);
+    padding: 8px 14px;
+    font-size: 0.85rem;
+    font-weight: 700;
+    border-radius: 12px;
+    text-decoration: none;
+    transition: all 0.25s ease-in-out;
+}
+
+.backBtn:hover {
+    background-color: rgba(0, 178, 45, 0.08);
+    color: var(--lens-color);
+    border-color: var(--lens-color);
+    transform: translateY(-1px);
+}
+
+.backBtn:active {
+    transform: translateY(1px);
+}
+
+.btnVideo {
+    padding: 8px 14px;
+    border: 1px solid rgba(0, 178, 45, 0.15);
+    background: var(--lens-color);
+    border-radius: 10px;
+    color: #ffffff;
+    font-weight: 700;
+    font-size: 0.85rem;
+    cursor: pointer;
+    text-decoration: none;
+    box-shadow: 0 4px 10px rgba(0, 178, 45, 0.1);
+    transition: all 0.2s ease;
+}
+
+.btnVideo:hover {
+    opacity: 0.9;
+    transform: translateY(-1px);
+}
+
+.fx-misc-switch {
+    display: inline-flex;
+    cursor: pointer;
+    flex-shrink: 0;
+}
+
+.fx-misc-switch input {
+    display: none;
+}
+
+.fx-misc-switch-track {
+    width: 68px;
+    height: 32px;
+    border-radius: 999px;
+    background: linear-gradient(180deg, #38bdf8 0%, #0ea5e9 100%);
+    position: relative;
+    backdrop-filter: blur(10px);
+    transition: background 0.5s ease;
+    box-shadow: inset 0 2px 6px rgba(0, 0, 0, 0.15);
+}
+
+.fx-misc-switch-thumb {
+    position: absolute;
+    top: 3px;
+    left: 3px;
+    width: 26px;
+    height: 26px;
+    border-radius: 50%;
+    background: radial-gradient(circle at 30% 30%, #fef3c7, #fbbf24);
+    box-shadow: 0 0 12px rgba(251, 191, 36, 0.8);
+    transition:
+        transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1),
+        background 0.5s ease,
+        box-shadow 0.5s ease;
+}
+
+.fx-misc-switch input:checked + .fx-misc-switch-track {
+    background: linear-gradient(180deg, #1e1b4b 0%, #0f172a 100%);
+}
+
+.fx-misc-switch input:checked + .fx-misc-switch-track .fx-misc-switch-thumb {
+    transform: translateX(36px);
+    background: radial-gradient(circle at 70% 30%, #e5e7eb, #94a3b8);
+    box-shadow:
+        inset -5px -3px 0 0 #475569,
+        0 0 12px rgba(203, 213, 225, 0.4);
 }
 
 .ai-search-layout {
     display: flex;
-    height: calc(100vh - 90px);
+    height: calc(100vh - 75px);
     position: relative;
     overflow: hidden;
 }
@@ -67,7 +212,10 @@ body[data-theme="dark"] h2 {
     border-right: 1px solid rgba(0, 178, 45, 0.15);
     display: flex;
     flex-direction: column;
-    transition: margin-left 0.3s ease;
+    transition:
+        transform 0.3s ease,
+        margin-left 0.3s ease;
+    z-index: 50;
 }
 
 .ai-sidebar-header {
@@ -164,6 +312,7 @@ body[data-theme="dark"] h2 {
     font-size: 0.8rem;
     cursor: pointer;
     color: var(--text-primary);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
 }
 
 .ai-chat-messages {
@@ -208,16 +357,18 @@ body[data-theme="dark"] h2 {
 .ai-message.user {
     align-items: flex-end;
 }
+
 .ai-message.user .ai-message-bubble {
     align-self: flex-end;
     background: var(--lens-color);
-    color: white;
+    color: #ffffff;
     border-bottom-right-radius: 4px;
 }
 
 .ai-message.assistant {
     align-items: flex-start;
 }
+
 .ai-message.assistant .ai-message-bubble {
     align-self: flex-start;
     background: var(--card);
@@ -292,7 +443,7 @@ body[data-theme="dark"] h2 {
     bottom: 4px;
     left: 4px;
     background: rgba(0, 0, 0, 0.55);
-    color: white;
+    color: #ffffff;
     font-size: 0.6rem;
     padding: 2px 6px;
     border-radius: 8px;
@@ -366,7 +517,7 @@ body[data-theme="dark"] h2 {
     border-radius: 14px;
     border: none;
     background: var(--lens-color);
-    color: white;
+    color: #ffffff;
     font-weight: 700;
     cursor: pointer;
     white-space: nowrap;
@@ -485,7 +636,7 @@ body[data-theme="dark"] h2 {
 .ai-confirm-delete {
     border: 1px solid #dc3545;
     background: #dc3545;
-    color: #fff;
+    color: #ffffff;
 }
 
 .ai-confirm-delete:hover {
@@ -493,6 +644,10 @@ body[data-theme="dark"] h2 {
 }
 
 @media (max-width: 768px) {
+    .ai-search-layout {
+        height: calc(100vh - 65px);
+    }
+
     .ai-conversations-sidebar {
         position: absolute;
         top: 0;
@@ -559,6 +714,16 @@ body[data-theme="dark"] h2 {
 }
 
 @media (max-width: 420px) {
+    .navContainerBtn {
+        gap: 6px;
+    }
+
+    .backBtn,
+    .btnVideo {
+        padding: 6px 10px;
+        font-size: 0.78rem;
+    }
+
     .ai-chat-input-wrapper {
         padding-left: 10px;
         padding-right: 10px;
