@@ -76,6 +76,18 @@
 
 </div>
 
+<div class="ai-confirm-modal" id="deleteConfirmModal" aria-hidden="true">
+    <div class="ai-confirm-box" role="dialog" aria-modal="true" aria-labelledby="deleteConfirmTitle">
+        <div class="ai-confirm-icon">🗑️</div>
+        <h2 id="deleteConfirmTitle">Hapus percakapan?</h2>
+        <p id="deleteConfirmBody">Percakapan ini akan dihapus dan tidak dapat dipulihkan.</p>
+        <div class="ai-confirm-actions">
+            <button type="button" id="cancelDeleteBtn" class="ai-confirm-cancel">Batal</button>
+            <button type="button" id="confirmDeleteBtn" class="ai-confirm-delete">Hapus</button>
+        </div>
+    </div>
+</div>
+
 <div class="token-modal" id="messageModal">
     <div class="modal-box" style="text-align: center; max-width: 380px; padding: 30px 25px;">
         <h2 id="messageTitle" style="color: var(--text-primary); margin-bottom: 12px; font-size: 1.4rem;">Pemberitahuan</h2>
