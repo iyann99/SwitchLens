@@ -30,6 +30,23 @@
 ## 🆕 Changelog
 
 <details open>
+<summary><strong>v4.5.1 — Bug Fix & Security Patch</strong></summary>
+<br>
+
+**Keamanan (CodeQL)**
+- 🛡️ **DOM XSS pada pemutar media** (`video.js`, `button.js`) — URL video/foto resolusi tinggi yang diambil dari atribut `data-*` kini divalidasi (`isSafeMediaUrl`) sebelum di-assign ke `.src`; hanya URL berprotokol `http:`/`https:` yang diteruskan.
+- 🛡️ **HTML injection pada modal API Key** (`config.js`) — nilai token Pexels/Pixabay kini di-escape (`escapeHtml`) sebelum disisipkan ke `innerHTML` modal.
+- 🛡️ **Incomplete URL substring sanitization** (`sw.js`) — pengecekan domain dinamis (`pexels.com`, `pixabay.com`, `unsplash.com`, `workers.dev`) yang sebelumnya memakai `hostname.includes()` (rentan dilewati domain seperti `notpexels.com.evil.net`) diganti dengan pencocokan exact-match/subdomain yang aman.
+
+**Sesi & Autentikasi**
+- 🔑 **Sesi kedaluwarsa tidak terdeteksi** (`auth.js`) — `isLoggedIn()` sebelumnya hanya memeriksa keberadaan token, bukan validitasnya. Kini token JWT di-decode untuk memeriksa klaim `exp`; sesi yang sudah habis masa berlakunya otomatis dibersihkan.
+- 🔑 **Permintaan ke Worker gagal diam-diam saat token kedaluwarsa** — seluruh pemanggilan endpoint terautentikasi (favorit, Smart Search AI) kini melalui `parseWorkerResponse()`, yang mendeteksi respons `401` dan menampilkan notifikasi "Sesi Berakhir" alih-alih gagal tanpa keterangan.
+- 🔑 **Toggle Advanced Search tidak persisten** (`config.js`) — status aktif/nonaktif sebelumnya hanya disimpan di variabel sementara dan reset setiap kali berpindah halaman. Kini disimpan di `localStorage`, sehingga status tetap konsisten antara `home.html` dan `ai-search.html`.
+- 🔑 **Duplikasi fungsi `isLoggedIn()`** — sebelumnya didefinisikan di dua file (`auth.js` dan `config.js`) dengan perilaku berbeda, dan pemenangnya bergantung pada urutan `<script>` di tiap halaman. Kini hanya satu definisi di `auth.js` sebagai sumber kebenaran tunggal.
+
+</details>
+
+<details>
 <summary><strong>v4.5 — Smart Search AI & Integrasi Wikimedia Commons</strong></summary>
 <br>
 
