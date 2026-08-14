@@ -1,10 +1,11 @@
-function isSafeMediaUrl(url) {
-    if (!url || typeof url !== "string") return false;
+function getSanitizedMediaUrl(url) {
+    if (!url || typeof url !== "string") return null;
     try {
         const parsed = new URL(url, window.location.href);
-        return parsed.protocol === "https:" || parsed.protocol === "http:";
+        if (parsed.protocol !== "https:" && parsed.protocol !== "http:") return null;
+        return parsed.href;
     } catch (e) {
-        return false;
+        return null;
     }
 }
 
@@ -278,7 +279,8 @@ document.addEventListener("DOMContentLoaded", () => {
                 return;
             }
 
-            if (!isSafeMediaUrl(videoUrl)) {
+            const safeVideoUrl = getSanitizedMediaUrl(videoUrl);
+            if (!safeVideoUrl) {
                 console.warn("Video source ditolak: URL tidak valid atau tidak aman.", videoUrl);
                 return;
             }
@@ -297,7 +299,7 @@ document.addEventListener("DOMContentLoaded", () => {
             }
 
             videoPlayer.style.display = "block";
-            videoPlayer.src = videoUrl;
+            videoPlayer.src = safeVideoUrl;
             lightbox.classList.add("open");
         }
     });

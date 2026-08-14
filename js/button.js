@@ -1,10 +1,11 @@
-function isSafeMediaUrl(url) {
-    if (!url || typeof url !== "string") return false;
+function getSanitizedMediaUrl(url) {
+    if (!url || typeof url !== "string") return null;
     try {
         const parsed = new URL(url, window.location.href);
-        return parsed.protocol === "https:" || parsed.protocol === "http:";
+        if (parsed.protocol !== "https:" && parsed.protocol !== "http:") return null;
+        return parsed.href;
     } catch (e) {
-        return false;
+        return null;
     }
 }
 
@@ -76,12 +77,13 @@ document.addEventListener("DOMContentLoaded", () => {
         const card = e.target.closest(".photo-card");
         if (card && currentMode === "photo") {
             const imgEl = card.querySelector(".image-wrapper img");
-            const highresUrl = imgEl.getAttribute("data-highres") || imgEl.src;
-            if (isSafeMediaUrl(highresUrl)) {
-                lightboxImg.src = highresUrl;
+            const rawHighresUrl = imgEl.getAttribute("data-highres") || imgEl.src;
+            const safeHighresUrl = getSanitizedMediaUrl(rawHighresUrl);
+            if (safeHighresUrl) {
+                lightboxImg.src = safeHighresUrl;
                 lightbox.classList.add("open");
             } else {
-                console.warn("Gambar ditolak: URL tidak valid atau tidak aman.", highresUrl);
+                console.warn("Gambar ditolak: URL tidak valid atau tidak aman.", rawHighresUrl);
             }
         }
     });
