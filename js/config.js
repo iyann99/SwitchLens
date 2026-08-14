@@ -2,11 +2,22 @@ const pexelsBaseURL = "https://api.pexels.com/v1";
 const pixabayBaseURL = "https://pixabay.com/api";
 const WORKER_BASE_URL = "https://iyan99-as.pradikaaprilianto9.workers.dev";
 
+function escapeHtml(str) {
+    if (str === null || str === undefined) return "";
+    return String(str)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#39;");
+}
+
 const gallery = document.getElementById('gallery-grid');
 
 
+const ADVANCED_MODE_KEY = "switchlens_advanced_mode_enabled";
 const ADVANCED_TOS_KEY = "switchlens_advanced_tos_accepted";
-let advancedModeEnabled = false;
+let advancedModeEnabled = localStorage.getItem(ADVANCED_MODE_KEY) === "true" && isLoggedIn();
 
 function isAdvancedTosAccepted() {
     return localStorage.getItem(ADVANCED_TOS_KEY) === "true";
@@ -22,6 +33,7 @@ function isAdvancedModeActive() {
 
 function setAdvancedMode(enabled) {
     advancedModeEnabled = enabled;
+    localStorage.setItem(ADVANCED_MODE_KEY, enabled ? "true" : "false");
     const toggleBtn = document.getElementById('advancedSearchToggle');
     if (toggleBtn) {
         toggleBtn.classList.toggle('active', enabled);
@@ -145,8 +157,7 @@ async function loadFavoritesCache() {
                 "Authorization": `Bearer ${getAccessToken()}`
             }
         });
-        const data = await response.json();
-
+        const data = await parseWorkerResponse(response);
         if (data.success) {
             favoritesCache = data.favorites || [];
         } else {
@@ -210,7 +221,7 @@ async function toggleFavorite(data, btnElement) {
                 },
                 body: JSON.stringify({ src: data.src })
             });
-            const result = await response.json();
+            const result = await parseWorkerResponse(response);
             if (!result.success) throw new Error(result.message || "Gagal menghapus favorite");
         } else {
             const response = await fetch(`${WORKER_BASE_URL}/favorites`, {
@@ -221,7 +232,7 @@ async function toggleFavorite(data, btnElement) {
                 },
                 body: JSON.stringify(data)
             });
-            const result = await response.json();
+            const result = await parseWorkerResponse(response);
             if (!result.success) throw new Error(result.message || "Gagal menambah favorite");
         }
     } catch (err) {
@@ -254,10 +265,10 @@ if (tokenModal) {
             </p>
             
             <label style="display:block; text-align:left; margin-bottom:5px; font-weight:bold; font-size:0.85rem;">Pexels API Key:</label>
-            <input id="tokenInputPexels" type="text" placeholder="Kosongkan jika tidak ada" style="width:100%; margin-bottom:15px;" value="${pexelsToken}">
+            <input id="tokenInputPexels" type="text" placeholder="Kosongkan jika tidak ada" style="width:100%; margin-bottom:15px;" value="${escapeHtml(pexelsToken)}">
             
             <label style="display:block; text-align:left; margin-bottom:5px; font-weight:bold; font-size:0.85rem;">Pixabay API Key:</label>
-            <input id="tokenInputPixabay" type="text" placeholder="Kosongkan jika tidak ada" style="width:100%; margin-bottom:15px;" value="${pixabayToken}">
+            <input id="tokenInputPixabay" type="text" placeholder="Kosongkan jika tidak ada" style="width:100%; margin-bottom:15px;" value="${escapeHtml(pixabayToken)}">
             
             <a href="guide.html" class="register">Belum ada API Key?</a>
             
@@ -446,6 +457,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     const advancedToggleBtn = document.getElementById('advancedSearchToggle');
     if (advancedToggleBtn) {
         advancedToggleBtn.addEventListener('click', handleAdvancedSearchClick);
+        setAdvancedMode(isAdvancedModeActive());
     }
 
     const advancedTosAgreeBtn = document.getElementById('advancedTosAgreeBtn');

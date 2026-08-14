@@ -1,3 +1,13 @@
+function isSafeMediaUrl(url) {
+    if (!url || typeof url !== "string") return false;
+    try {
+        const parsed = new URL(url, window.location.href);
+        return parsed.protocol === "https:" || parsed.protocol === "http:";
+    } catch (e) {
+        return false;
+    }
+}
+
 async function getVideos(query, pageNum, language) {
     try {
         loading = true;
@@ -265,6 +275,11 @@ document.addEventListener("DOMContentLoaded", () => {
 
             if (isExternal) {
                 showYouTubeConfirmModal(videoUrl);
+                return;
+            }
+
+            if (!isSafeMediaUrl(videoUrl)) {
+                console.warn("Video source ditolak: URL tidak valid atau tidak aman.", videoUrl);
                 return;
             }
 

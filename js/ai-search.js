@@ -119,7 +119,7 @@ document.addEventListener("DOMContentLoaded", async () => {
                 }
             );
 
-            const data = await response.json();
+            const data = await parseWorkerResponse(response);
 
             renderConversationsList(data.conversations || []);
         } catch (err) {
@@ -202,7 +202,7 @@ document.addEventListener("DOMContentLoaded", async () => {
                 }
             );
 
-            const data = await response.json().catch(() => null);
+            const data = await parseWorkerResponse(response);
 
             if (!response.ok || !data?.success) {
                 throw new Error(data?.message || "Gagal menghapus percakapan.");
@@ -239,7 +239,7 @@ document.addEventListener("DOMContentLoaded", async () => {
                 }
             );
 
-            const data = await response.json();
+            const data = await parseWorkerResponse(response);
 
             (data.messages || []).forEach(msg => {
                 renderMessage(msg.role, msg.content, msg.images || null);
@@ -283,7 +283,7 @@ document.addEventListener("DOMContentLoaded", async () => {
                 }
             );
 
-            const data = await response.json();
+            const data = await parseWorkerResponse(response);
 
             if (data.success && data.conversation) {
                 currentConversationId = data.conversation.id;
@@ -293,6 +293,8 @@ document.addEventListener("DOMContentLoaded", async () => {
                 await loadConversations();
 
                 sidebar.classList.remove("open");
+            } else if (data.message) {
+                showMessageModal("Gagal", data.message);
             }
         } catch (err) {
             showMessageModal("Gagal", "Tidak dapat membuat percakapan baru.");
@@ -317,12 +319,15 @@ document.addEventListener("DOMContentLoaded", async () => {
                     }
                 );
 
-                const data = await response.json();
+                const data = await parseWorkerResponse(response);
 
                 if (data.success && data.conversation) {
                     currentConversationId = data.conversation.id;
 
                     resetChatView();
+                } else {
+                    showMessageModal("Gagal", data.message || "Tidak dapat memulai percakapan.");
+                    return;
                 }
             } catch (err) {
                 showMessageModal("Gagal", "Tidak dapat memulai percakapan.");
@@ -366,7 +371,7 @@ document.addEventListener("DOMContentLoaded", async () => {
                 })
             });
 
-            const data = await response.json();
+            const data = await parseWorkerResponse(response);
 
             typingEl.remove();
 

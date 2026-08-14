@@ -17,9 +17,63 @@ function clearSession() {
   localStorage.removeItem(AUTH_STORAGE_KEY);
 }
 
+function decodeJwtPayload(token) {
+    try {
+        const base64Url = token.split(".")[1];
+        if (!base64Url) return null;
+        const base64 = base64Url.replace(/-/g, "+").replace(/_/g, "/");
+        const jsonPayload = decodeURIComponent(
+            atob(base64)
+                .split("")
+                .map((c) => "%" + c.charCodeAt(0).toString(16).padStart(2, "0"))
+                .join("")
+        );
+        return JSON.parse(jsonPayload);
+    } catch (e) {
+        return null;
+    }
+}
+
+function isTokenExpired(token) {
+    const payload = decodeJwtPayload(token);
+    if (!payload || !payload.exp) return true;
+    const nowInSeconds = Math.floor(Date.now() / 1000);
+    return payload.exp <= nowInSeconds;
+}
+
 function isLoggedIn() {
-  const session = getSession();
-  return !!(session && session.access_token);
+    const session = getSession();
+    if (!session || !session.access_token) return false;
+
+    if (isTokenExpired(session.access_token)) {
+        clearSession();
+        return false;
+    }
+
+    return true;
+}
+
+function handleUnauthorizedResponse() {
+    const wasLoggedIn = isLoggedIn();
+    clearSession();
+    if (wasLoggedIn && typeof showMessageModal === "function") {
+        showMessageModal(
+            "Sesi Berakhir",
+            "Sesi login kamu sudah habis masa berlakunya. Silakan masuk kembali untuk melanjutkan."
+        );
+    }
+}
+
+async function parseWorkerResponse(response) {
+    if (response.status === 401) {
+        handleUnauthorizedResponse();
+        return { success: false, message: "Sesi login sudah berakhir." };
+    }
+    try {
+        return await response.json();
+    } catch (e) {
+        return { success: false, message: "Respons server tidak valid." };
+    }
 }
 
 function getAccessToken() {

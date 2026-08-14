@@ -1,5 +1,5 @@
 
-const CACHE_NAME = "switchlens-cache-v5.5";
+const CACHE_NAME = "switchlens-cache-v5.6";
 
 const STATIC_ASSETS = [
   "/home.html",
@@ -59,14 +59,23 @@ self.addEventListener("activate", (event) => {
 
 
 
+function isHostOrSubdomain(hostname, baseHost) {
+  return hostname === baseHost || hostname.endsWith(`.${baseHost}`);
+}
+
 self.addEventListener("fetch", (event) => {
   const url = new URL(event.request.url);
 
-  const isKnownDynamicAPI =
-    url.hostname.includes("workers.dev") ||
-    url.hostname.includes("pexels.com") ||
-    url.hostname.includes("pixabay.com") ||
-    url.hostname.includes("unsplash.com");
+  const DYNAMIC_API_HOSTS = [
+    "workers.dev",
+    "pexels.com",
+    "pixabay.com",
+    "unsplash.com"
+  ];
+
+  const isKnownDynamicAPI = DYNAMIC_API_HOSTS.some((host) =>
+    isHostOrSubdomain(url.hostname, host)
+  );
 
   const isCrossOriginImage =
     url.origin !== self.location.origin &&
