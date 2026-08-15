@@ -1,5 +1,16 @@
 let currentConversationId = null;
 
+function getSanitizedMediaUrl(url) {
+    if (!url || typeof url !== "string") return null;
+    try {
+        const parsed = new URL(url, window.location.href);
+        if (parsed.protocol !== "https:" && parsed.protocol !== "http:") return null;
+        return parsed.href;
+    } catch (e) {
+        return null;
+    }
+}
+
 document.addEventListener("DOMContentLoaded", async () => {
     if (!isLoggedIn()) {
         showMessageModal(
@@ -26,13 +37,42 @@ document.addEventListener("DOMContentLoaded", async () => {
     const confirmDeleteBtn = document.getElementById("confirmDeleteBtn");
     const deleteConfirmBody = document.getElementById("deleteConfirmBody");
 
+    const lightbox = document.getElementById("lightbox");
+    const lightboxImg = document.getElementById("lightboxImg");
+    const closeLightbox = document.getElementById("closeLightbox");
+
+    function openImagePreview(url) {
+        const safeUrl = getSanitizedMediaUrl(url);
+        if (!safeUrl || !lightbox || !lightboxImg) return;
+        lightboxImg.src = safeUrl;
+        lightbox.classList.add("open");
+    }
+
+    function closeImagePreview() {
+        if (!lightbox || !lightboxImg) return;
+        lightbox.classList.remove("open");
+        lightboxImg.src = "";
+    }
+
+    closeLightbox?.addEventListener("click", closeImagePreview);
+
+    lightbox?.addEventListener("click", (e) => {
+        if (e.target === lightbox) closeImagePreview();
+    });
+
+    document.addEventListener("keydown", (e) => {
+        if (e.key === "Escape" && lightbox?.classList.contains("open")) {
+            closeImagePreview();
+        }
+    });
+
     let deleteConfirmationResolver = null;
 
-    if (typeof isAdvancedModeActive === "function") {
+    if (typeof isAdvancedModeActive === "function" && advancedToggle) {
         advancedToggle.checked = isAdvancedModeActive();
     }
 
-    advancedToggle.addEventListener("change", () => {
+    advancedToggle?.addEventListener("change", () => {
         if (
             advancedToggle.checked &&
             typeof isAdvancedModeActive === "function" &&
@@ -462,27 +502,23 @@ document.addEventListener("DOMContentLoaded", async () => {
 
                 card.className = "ai-drawer-card";
 
+                const safeThumbUrl = getSanitizedMediaUrl(img.medium);
+
                 card.innerHTML = `
                         <img
-                            src="${img.medium}"
+                            src="${escapeHtml(safeThumbUrl || "")}"
                             alt="${escapeHtml(img.alt || "Hasil pencarian")}"
                             loading="lazy"
                             class="lazy-photo-img"
                         >
 
                         <span class="ai-drawer-provider">
-                            ${img.provider}
+                            ${escapeHtml(img.provider || "")}
                         </span>
                     `;
 
                 card.addEventListener("click", () => {
-                    window.open(
-                        img.large || img.medium,
-
-                        "_blank",
-
-                        "noopener,noreferrer"
-                    );
+                    openImagePreview(img.large || img.medium);
                 });
 
                 drawer.appendChild(card);
