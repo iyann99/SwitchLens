@@ -1,3 +1,14 @@
+function getSanitizedMediaUrl(url) {
+    if (!url || typeof url !== "string") return null;
+    try {
+        const parsed = new URL(url, window.location.href);
+        if (parsed.protocol !== "https:" && parsed.protocol !== "http:") return null;
+        return parsed.href;
+    } catch (e) {
+        return null;
+    }
+}
+
 document.addEventListener("DOMContentLoaded", async () => {
     const gallery = document.getElementById("gallery-grid");
     const lightbox = document.getElementById("lightbox");
@@ -20,19 +31,30 @@ document.addEventListener("DOMContentLoaded", async () => {
         const fragment = document.createDocumentFragment();
 
         data.forEach(item => {
+            const safeSrc = getSanitizedMediaUrl(item.src);
+            const safeHighres = getSanitizedMediaUrl(item.highres);
+            const safeThumbnail = item.thumbnail ? getSanitizedMediaUrl(item.thumbnail) : null;
+
+            if (!safeSrc && !safeThumbnail) return;
+
             const card = document.createElement("div");
             card.className = `media-card ${item.type === "video" ? "video-card" : "photo-card"}`;
 
             if (item.type === "video") {
-                card.dataset.video = item.highres;
+                card.dataset.video = safeHighres || "";
             }
+
+            const safeTitle = escapeHtml(item.title || "Untitled");
+            const safeAuthor = escapeHtml(item.author || "Unknown");
+            const safeProvider = escapeHtml(item.provider || "");
+            const displaySrc = item.type === "video" ? safeThumbnail : safeSrc;
 
             card.innerHTML = `
                 <div class="image-wrapper">
                     <img
-                        src="${item.type === "video" ? item.thumbnail : item.src}"
-                        data-highres="${item.highres}"
-                        alt="${item.title}"
+                        src="${escapeHtml(displaySrc || "")}"
+                        data-highres="${escapeHtml(safeHighres || "")}"
+                        alt="${safeTitle}"
                         loading="lazy"
                         class="lazy-photo-img">
 
@@ -56,29 +78,29 @@ document.addEventListener("DOMContentLoaded", async () => {
                 </div>
 
                 <div class="card-info">
-                    <h3 class="card-title">${item.title}</h3>
+                    <h3 class="card-title">${safeTitle}</h3>
 
                     <div class="card-footer">
                         <span class="api-tag">
-                            ${item.author} (${item.provider})
+                            ${safeAuthor} (${safeProvider})
                         </span>
 
                         <div class="card-actions">
                             <button
                                 class="action-btn btn-fav active"
-                                data-type="${item.type}"
-                                data-src="${item.src}"
-                                data-highres="${item.highres}"
-                                data-title="${item.title}"
-                                data-author="${item.author}"
-                                data-provider="${item.provider}"
-                                data-thumbnail="${item.thumbnail || ""}">
+                                data-type="${escapeHtml(item.type || "")}"
+                                data-src="${escapeHtml(safeSrc || "")}"
+                                data-highres="${escapeHtml(safeHighres || "")}"
+                                data-title="${safeTitle}"
+                                data-author="${safeAuthor}"
+                                data-provider="${safeProvider}"
+                                data-thumbnail="${escapeHtml(safeThumbnail || "")}">
                                 ❤️
                             </button>
 
                             <button
                                 class="action-btn btn-download"
-                                data-url="${item.highres}">
+                                data-url="${escapeHtml(safeHighres || "")}">
                                 ⬇️
                             </button>
                         </div>
@@ -147,8 +169,45 @@ document.addEventListener("DOMContentLoaded", async () => {
             </p>
         `;
     } else {
+        gallery.innerHTML = `
+            <p style="text-align:center; width:100%; color:var(--text-secondary); padding: 40px 0;">
+                Memuat koleksi favorit...
+            </p>
+        `;
+
         await loadFavoritesCache();
-        filterAndSort();
+
+        if (typeof favoritesCacheLoadFailed !== "undefined" && favoritesCacheLoadFailed) {
+            gallery.innerHTML = `
+                <div style="text-align:center; width:100%; padding: 40px 0;">
+                    <p style="color:var(--text-secondary); margin-bottom: 12px;">
+                        Gagal memuat koleksi favorit. Periksa koneksi internet kamu.
+                    </p>
+                    <button id="retryLoadFavBtn" class="action-btn" style="padding: 8px 20px;">
+                        Coba Lagi
+                    </button>
+                </div>
+            `;
+            document.getElementById("retryLoadFavBtn")?.addEventListener("click", async () => {
+                gallery.innerHTML = `
+                    <p style="text-align:center; width:100%; color:var(--text-secondary); padding: 40px 0;">
+                        Memuat koleksi favorit...
+                    </p>
+                `;
+                await loadFavoritesCache();
+                if (typeof favoritesCacheLoadFailed !== "undefined" && favoritesCacheLoadFailed) {
+                    filterAndSort();
+                    const notice = document.createElement("p");
+                    notice.style.cssText = "text-align:center; width:100%; color:var(--text-secondary); padding: 10px 0;";
+                    notice.textContent = "Masih gagal memuat. Coba beberapa saat lagi.";
+                    gallery.prepend(notice);
+                } else {
+                    filterAndSort();
+                }
+            });
+        } else {
+            filterAndSort();
+        }
     }
 
     gallery.addEventListener("click", (e) => {

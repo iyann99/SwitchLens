@@ -143,29 +143,40 @@ async function downloadMedia(url, filename, downloadLocation = null) {
 
 let favoritesCache = [];
 let favoritesCacheLoaded = false;
+let favoritesCacheLoadFailed = false;
 
 async function loadFavoritesCache() {
+    favoritesCacheLoadFailed = false;
+
     if (!isLoggedIn()) {
         favoritesCache = [];
         favoritesCacheLoaded = true;
         return;
     }
 
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 15000);
+
     try {
         const response = await fetch(`${WORKER_BASE_URL}/favorites`, {
             headers: {
                 "Authorization": `Bearer ${getAccessToken()}`
-            }
+            },
+            signal: controller.signal
         });
         const data = await parseWorkerResponse(response);
         if (data.success) {
             favoritesCache = data.favorites || [];
         } else {
             favoritesCache = [];
+            favoritesCacheLoadFailed = true;
         }
     } catch (err) {
         console.error("Gagal memuat daftar favorite:", err);
         favoritesCache = [];
+        favoritesCacheLoadFailed = true;
+    } finally {
+        clearTimeout(timeoutId);
     }
 
     favoritesCacheLoaded = true;
