@@ -10,6 +10,8 @@ function getSanitizedMediaUrl(url) {
 }
 
 async function getVideos(query, pageNum, language) {
+    const encodedQuery = query === "curated" ? query : encodeURIComponent(query);
+
     try {
         loading = true;
 
@@ -18,6 +20,7 @@ async function getVideos(query, pageNum, language) {
         }
 
         let combinedVideos = [];
+        let isRelevant = true;
 
         if (pexelsToken || pixabayToken) {
             let pexelsVideos = [];
@@ -82,7 +85,7 @@ async function getVideos(query, pageNum, language) {
         else {
             try {
                 const isAdvanced = typeof isAdvancedModeActive === 'function' && isAdvancedModeActive();
-                const workerUrl = `${typeof WORKER_BASE_URL !== 'undefined' ? WORKER_BASE_URL : ''}/videos?query=${query}&page=${pageNum}&lang=${language}${isAdvanced ? '&advanced=true' : ''}`;
+                const workerUrl = `${typeof WORKER_BASE_URL !== 'undefined' ? WORKER_BASE_URL : ''}/videos?query=${encodedQuery}&page=${pageNum}&lang=${language}${isAdvanced ? '&advanced=true' : ''}`;
 
                 const fetchHeaders = {};
                 if (isAdvanced && typeof getAccessToken === 'function') {
@@ -95,6 +98,7 @@ async function getVideos(query, pageNum, language) {
                     const data = await response.json();
                     
                     combinedVideos = data.videos || data || [];
+                    isRelevant = data.relevant !== false;
                     
                     if (typeof incrementFreeUsage === 'function') {
                         incrementFreeUsage(combinedVideos.length);
@@ -114,41 +118,57 @@ async function getVideos(query, pageNum, language) {
             return;
         }
 
+        if (pageNum === 1 && !isRelevant && query !== "curated") {
+            const notice = document.createElement("p");
+            notice.style.cssText = "text-align:center; width:100%; color:var(--text-secondary); padding: 10px 20px;";
+            notice.textContent = "Tidak dapat menemukan konten yang Anda cari. Berikut hasil lain yang mungkin menarik:";
+            gallery.appendChild(notice);
+        }
+
         const fragment = document.createDocumentFragment();
 
         combinedVideos.forEach(({ author, title, thumbnail, videoSrc, provider, isExternalLink, channelUrl }) => {
+            const safeVideoSrc = getSanitizedMediaUrl(videoSrc);
+            const safeThumbnail = getSanitizedMediaUrl(thumbnail);
+            if (!safeVideoSrc || !safeThumbnail) return;
+
             const card = document.createElement("div");
             card.className = "media-card video-card";
-            card.setAttribute("data-video", videoSrc);
+            card.setAttribute("data-video", safeVideoSrc);
             if (isExternalLink) {
                 card.setAttribute("data-external-link", "true");
             }
 
-            const favStatus = isFavorite(thumbnail) ? '❤️' : '🤍';
-            const favClass = isFavorite(thumbnail) ? 'active' : '';
+            const favStatus = isFavorite(safeThumbnail) ? '❤️' : '🤍';
+            const favClass = isFavorite(safeThumbnail) ? 'active' : '';
 
             const playIconHtml = isExternalLink
                 ? `<div class="play-icon" style="position:absolute; top:50%; left:50%; transform:translate(-50%, -50%); font-size:1.8rem; color:white; text-shadow: 0 0 10px rgba(0,0,0,0.5); pointer-events:none;">▶️</div>`
                 : `<div class="play-icon" style="position:absolute; top:50%; left:50%; transform:translate(-50%, -50%); font-size:2rem; color:white; text-shadow: 0 0 10px rgba(0,0,0,0.5); pointer-events:none;">&#9658;</div>`;
-                
-            const authorHtml = channelUrl
-                ? `<a href="${channelUrl}" target="_blank" rel="noopener noreferrer" class="channel-link">${author}</a> (${provider})`
-                : `${author} (${provider})`;
+
+            const safeTitle = escapeHtml(title || 'Untitled');
+            const safeAuthor = escapeHtml(author || 'Unknown');
+            const safeProvider = escapeHtml(provider || '');
+            const safeChannelUrl = channelUrl ? getSanitizedMediaUrl(channelUrl) : null;
+
+            const authorHtml = safeChannelUrl
+                ? `<a href="${escapeHtml(safeChannelUrl)}" target="_blank" rel="noopener noreferrer" class="channel-link">${safeAuthor}</a> (${safeProvider})`
+                : `${safeAuthor} (${safeProvider})`;
 
             card.innerHTML = `
                 <div class="image-wrapper">
-                    <img src="${thumbnail}" alt="${title}" loading="lazy" class="lazy-photo-img">
+                    <img src="${escapeHtml(safeThumbnail)}" alt="${safeTitle}" loading="lazy" class="lazy-photo-img">
                     ${playIconHtml}
                 </div>
                 <div class="card-info">
-                    <h3 class="card-title">${title}</h3>
+                    <h3 class="card-title">${safeTitle}</h3>
                     <div class="card-footer">
                         <span class="api-tag">${authorHtml}</span>
                         <div class="card-actions">
-                            <button class="action-btn btn-fav ${favClass}" data-type="video" data-src="${thumbnail}" data-highres="${videoSrc}" data-title="${title}" data-author="${author}" data-provider="${provider}" data-thumbnail="${thumbnail}">
+                            <button class="action-btn btn-fav ${favClass}" data-type="video" data-src="${escapeHtml(safeThumbnail)}" data-highres="${escapeHtml(safeVideoSrc)}" data-title="${safeTitle}" data-author="${safeAuthor}" data-provider="${safeProvider}" data-thumbnail="${escapeHtml(safeThumbnail)}">
                                 ${favStatus}
                             </button>
-                            ${isExternalLink ? '' : `<button class="action-btn btn-download" data-url="${videoSrc}">⬇️</button>`}
+                            ${isExternalLink ? '' : `<button class="action-btn btn-download" data-url="${escapeHtml(safeVideoSrc)}">⬇️</button>`}
                         </div>
                     </div>
                 </div>

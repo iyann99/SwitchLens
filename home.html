@@ -1,254 +1,475 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="id">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-  <title>Dashboard Jelajah - SwitchLens</title>
-  <meta name="description" content="Cari dan temukan stok foto serta video dari Pexels, Pixabay, dan Unsplash sekaligus melalui satu dashboard interaktif SwitchLens.">
-  <meta name="robots" content="index, follow">
-  <link rel="canonical" href="https://switchlens.vercel.app/home.html">
+        <title>Dashboard Jelajah - SwitchLens</title>
+        <meta
+            name="description"
+            content="Cari dan temukan stok foto serta video dari Pexels, Pixabay, dan Unsplash sekaligus melalui satu dashboard interaktif SwitchLens."
+        />
+        <meta name="robots" content="index, follow" />
+        <link rel="canonical" href="https://switchlens.vercel.app/home.html" />
 
-  <link rel="icon" type="image/png" href="/icons/favicon-96x96.png" sizes="96x96" />
-  <link rel="icon" type="image/svg+xml" href="/icons/favicon.svg" />
-  <link rel="shortcut icon" href="/icons/favicon.ico" />
-  <link rel="apple-touch-icon" sizes="180x180" href="/icons/apple-touch-icon.png" />
-  <meta name="apple-mobile-web-app-title" content="SwitchLens" />
-  <link rel="manifest" href="/icons/site.webmanifest" />
+        <link
+            rel="icon"
+            type="image/png"
+            href="/icons/favicon-96x96.png"
+            sizes="96x96"
+        />
+        <link rel="icon" type="image/svg+xml" href="/icons/favicon.svg" />
+        <link rel="shortcut icon" href="/icons/favicon.ico" />
+        <link
+            rel="apple-touch-icon"
+            sizes="180x180"
+            href="/icons/apple-touch-icon.png"
+        />
+        <meta name="apple-mobile-web-app-title" content="SwitchLens" />
+        <link rel="manifest" href="/icons/site.webmanifest" />
 
-  <meta property="og:type" content="website">
-  <meta property="og:url" content="https://switchlens.vercel.app/home.html">
-  <meta property="og:title" content="SwitchLens Dashboard - Mulai Jelajah Visual">
-  <meta property="og:description" content="Cari foto dan video dari Pexels, Pixabay, dan Unsplash sekaligus, lalu simpan koleksi favoritmu ke akun pribadi.">
-  <meta property="og:image" content="https://switchlens.vercel.app/assets/og-preview.png">
-  <meta property="og:locale" content="id_ID">
+        <meta property="og:type" content="website" />
+        <meta
+            property="og:url"
+            content="https://switchlens.vercel.app/home.html"
+        />
+        <meta
+            property="og:title"
+            content="SwitchLens Dashboard - Mulai Jelajah Visual"
+        />
+        <meta
+            property="og:description"
+            content="Cari foto dan video dari Pexels, Pixabay, dan Unsplash sekaligus, lalu simpan koleksi favoritmu ke akun pribadi."
+        />
+        <meta
+            property="og:image"
+            content="https://switchlens.vercel.app/assets/og-preview.png"
+        />
+        <meta property="og:locale" content="id_ID" />
 
-  <meta property="twitter:card" content="summary_large_image">
-  <meta property="twitter:title" content="SwitchLens Dashboard - Mulai Jelajah Visual">
-  <meta property="twitter:description" content="Cari foto dan video dari Pexels, Pixabay, dan Unsplash sekaligus, lalu simpan koleksi favoritmu ke akun pribadi.">
-  <meta property="twitter:image" content="https://switchlens.vercel.app/assets/og-preview.png">
-  
-  <meta name="google-site-verification" content="WxDj8l9F1ZDV_EmsvDcZfuHmyfCdKsSxDBabFustOgk" />
+        <meta property="twitter:card" content="summary_large_image" />
+        <meta
+            property="twitter:title"
+            content="SwitchLens Dashboard - Mulai Jelajah Visual"
+        />
+        <meta
+            property="twitter:description"
+            content="Cari foto dan video dari Pexels, Pixabay, dan Unsplash sekaligus, lalu simpan koleksi favoritmu ke akun pribadi."
+        />
+        <meta
+            property="twitter:image"
+            content="https://switchlens.vercel.app/assets/og-preview.png"
+        />
 
-  <link rel="stylesheet" href="css/home.css" type="text/css" media="all" />
-</head>
+        <meta
+            name="google-site-verification"
+            content="WxDj8l9F1ZDV_EmsvDcZfuHmyfCdKsSxDBabFustOgk"
+        />
 
-<body data-theme="light">
-<header>
-  <nav>
-    <a href="#" class="logo-container">
-      <span class="logo1">Switch</span><span class="logo2">Lens</span>
-    </a>
-    <div class="navContainerBtn">
-      <a href="favorites.html" class="btn-secondary-outline">
-        <span>Favorit</span>
-        <span class="btn-icon">❤️</span>
-      </a>
-      <button class="btnVideo" id="modeSwitcher">Video</button>
-      <div id="menuBtn">&#8801;</div>
-    </div>
-  </nav>
+        <link
+            rel="stylesheet"
+            href="css/home.css"
+            type="text/css"
+            media="all"
+        />
+    </head>
 
-  <div id="menuBar">
-    <div class="search-wrapper hidden-by-floating">
-      <input type="text" id="searchInput" placeholder="Cari foto atau video..." />
-      <button id="searchBtn">Cari</button>
-    </div>
+    <body data-theme="light">
+        <header>
+            <nav>
+                <a href="#" class="logo-container">
+                    <span class="logo1">Switch</span
+                    ><span class="logo2">Lens</span>
+                </a>
+                <div class="navContainerBtn">
+                    <a href="favorites.html" class="btn-secondary-outline">
+                        <span>Favorit</span>
+                        <span class="btn-icon">❤️</span>
+                    </a>
+                    <button class="btnVideo" id="modeSwitcher">Video</button>
+                    <div id="menuBtn">&#8801;</div>
+                </div>
+            </nav>
 
-    <div class="slider-viewport">
-      <div class="slider-track" id="sliderTrack">
+            <div id="menuBar">
+                <div class="search-wrapper hidden-by-floating">
+                    <input
+                        type="text"
+                        id="searchInput"
+                        placeholder="Cari foto atau video..."
+                    />
+                    <button id="searchBtn">Cari</button>
+                </div>
 
-        <!-- SLIDE 1: History Search + Kategori -->
-        <div class="slide-panel">
-          <div class="history-wrapper" id="historyWrapper">
-            <span class="category-title">Riwayat Pencarian:</span>
-            <div class="history-tags" id="historyTags">
-              <span class="history-empty">Belum ada riwayat pencarian.</span>
+                <div class="slider-viewport">
+                    <div class="slider-track" id="sliderTrack">
+                        <!-- SLIDE 1: History Search + Kategori -->
+                        <div class="slide-panel">
+                            <div class="history-wrapper" id="historyWrapper">
+                                <span class="category-title"
+                                    >Riwayat Pencarian:</span
+                                >
+                                <div class="history-tags" id="historyTags">
+                                    <span class="history-empty"
+                                        >Belum ada riwayat pencarian.</span
+                                    >
+                                </div>
+                            </div>
+
+                            <div class="category-wrapper">
+                                <span class="category-title"
+                                    >Kategori Terpopuler:</span
+                                >
+                                <div class="category-tags">
+                                    <button class="cat-tag active">
+                                        Semua
+                                    </button>
+                                    <button class="cat-tag">Nature</button>
+                                    <button class="cat-tag">Anime</button>
+                                    <button class="cat-tag">Cyberpunk</button>
+                                    <button class="cat-tag">Cityscape</button>
+                                    <button class="cat-tag">Animals</button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="slide-panel">
+                            <div class="slide2-row">
+                                <a href="index.html" class="backBtn">
+                                    &#8592; Kembali
+                                </a>
+                                <label class="fx-misc-switch">
+                                    <input id="themeToggle" type="checkbox" />
+                                    <span class="fx-misc-switch-track">
+                                        <span
+                                            class="fx-misc-switch-thumb"
+                                        ></span>
+                                    </span>
+                                </label>
+                            </div>
+
+                            <div class="slide2-row" id="authNavSlot"></div>
+
+                            <div class="slide2-row">
+                                <button
+                                    class="btn-history-action"
+                                    id="advancedSearchToggle"
+                                >
+                                    🔒 Advanced Search
+                                </button>
+                            </div>
+
+                            <div class="slide2-row">
+                                <a
+                                    href="ai-search.html"
+                                    class="btn-history-action"
+                                    style="
+                                        text-align: center;
+                                        text-decoration: none;
+                                        display: block;
+                                    "
+                                    >🤖 Smart Search AI</a
+                                >
+                            </div>
+
+                            <div class="slide2-row">
+                                <button
+                                    class="btn-history-action"
+                                    id="exportHistoryBtn"
+                                >
+                                    ⬆️ Export Riwayat
+                                </button>
+                                <button
+                                    class="btn-history-action"
+                                    id="importHistoryBtn"
+                                >
+                                    ⬇️ Import Riwayat
+                                </button>
+                                <input
+                                    type="file"
+                                    id="importHistoryFile"
+                                    accept="application/json"
+                                    hidden
+                                />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="slide-dots">
+                    <span class="slide-dot active" data-slide="0"></span>
+                    <span class="slide-dot" data-slide="1"></span>
+                </div>
             </div>
-          </div>
+        </header>
 
-          <div class="category-wrapper">
-            <span class="category-title">Kategori Terpopuler:</span>
-            <div class="category-tags">
-              <button class="cat-tag active">Semua</button>
-              <button class="cat-tag">Nature</button>
-              <button class="cat-tag">Anime</button>
-              <button class="cat-tag">Cyberpunk</button>
-              <button class="cat-tag">Cityscape</button>
-              <button class="cat-tag">Animals</button>
-            </div>
-          </div>
+        <div class="floating-search-wrapper" id="floatingSearchWrapper">
+            <input
+                type="text"
+                id="floatingSearchInput"
+                placeholder="Cari foto atau video..."
+            />
+            <button id="floatingSearchBtn">Cari</button>
         </div>
 
-        <div class="slide-panel">
-          <div class="slide2-row">
-            <a href="index.html" class="backBtn">
-                &#8592; Kembali
-            </a>
-            <label class="fx-misc-switch">
-                <input id="themeToggle" type="checkbox">
-                <span class="fx-misc-switch-track">
-                    <span class="fx-misc-switch-thumb"></span>
-                </span>
-            </label>
-          </div>
+        <main class="main-container">
+            <div class="gallery-grid" id="gallery-grid"></div>
+            <div id="loader"></div>
+        </main>
 
-          <div class="slide2-row" id="authNavSlot">
-          </div>
-
-          <div class="slide2-row">
-            <button class="btn-history-action" id="advancedSearchToggle">🔒 Advanced Search</button>
-          </div>
-
-          <div class="slide2-row">
-            <a href="ai-search.html" class="btn-history-action" style="text-align: center; text-decoration: none; display: block;">🤖 Smart Search AI</a>
-          </div>
-
-          <div class="slide2-row">
-            <button class="btn-history-action" id="exportHistoryBtn">⬆️ Export Riwayat</button>
-            <button class="btn-history-action" id="importHistoryBtn">⬇️ Import Riwayat</button>
-            <input type="file" id="importHistoryFile" accept="application/json" hidden>
-          </div>
+        <div id="lightbox">
+            <span id="closeLightbox">&times;</span>
+            <img id="lightboxImg" src="" alt="Full Screen Preview" />
         </div>
 
-      </div>
-    </div>
+        <div class="token-modal">
+            <div class="modal-box">
+                <h2>Pexels API Key Required</h2>
+                <p>
+                    Tidak ada token yang tersedia. Masukkan API Key Pexels untuk
+                    melanjutkan.
+                </p>
+                <input
+                    id="tokenInput"
+                    type="text"
+                    placeholder="Masukkan API Key"
+                />
 
-    <div class="slide-dots">
-      <span class="slide-dot active" data-slide="0"></span>
-      <span class="slide-dot" data-slide="1"></span>
-    </div>
-  </div>
-</header>
+                <button id="saveToken">Simpan</button>
+            </div>
+        </div>
 
-<div class="floating-search-wrapper" id="floatingSearchWrapper">
-  <input type="text" id="floatingSearchInput" placeholder="Cari foto atau video..." />
-  <button id="floatingSearchBtn">Cari</button>
-</div>
+        <div class="token-modal" id="messageModal">
+            <div
+                class="modal-box"
+                style="text-align: center; max-width: 380px; padding: 30px 25px"
+            >
+                <h2
+                    id="messageTitle"
+                    style="
+                        color: var(--text-primary);
+                        margin-bottom: 12px;
+                        font-size: 1.4rem;
+                    "
+                >
+                    Pemberitahuan
+                </h2>
+                <p
+                    id="messageBody"
+                    style="
+                        font-size: 0.95rem;
+                        color: var(--text-secondary);
+                        margin-bottom: 25px;
+                        line-height: 1.6;
+                    "
+                >
+                    Pesan di sini
+                </p>
+                <button id="closeMessageBtn">Tutup</button>
+            </div>
+        </div>
 
-<main class="main-container">
-  <div class="gallery-grid" id="gallery-grid">
-  </div>
-  <div id="loader"></div>
-</main>
+        <div class="token-modal" id="advancedTosModal">
+            <div
+                class="modal-box"
+                style="text-align: left; max-width: 480px; padding: 30px 25px"
+            >
+                <h2
+                    style="
+                        color: var(--text-primary);
+                        margin-bottom: 12px;
+                        font-size: 1.3rem;
+                        text-align: center;
+                    "
+                >
+                    ⚠️ Advanced Search (Experimental)
+                </h2>
 
-<div id="lightbox">
-  <span id="closeLightbox">&times;</span>
-  <img id="lightboxImg" src="" alt="Full Screen Preview" />
-</div>
+                <div
+                    style="
+                        font-size: 0.88rem;
+                        color: var(--text-secondary);
+                        margin-bottom: 20px;
+                        line-height: 1.7;
+                        max-height: 45vh;
+                        overflow-y: auto;
+                        padding-right: 4px;
+                    "
+                >
+                    <p style="margin-bottom: 12px">
+                        Advanced Search adalah fitur eksperimental yang
+                        memperluas hasil pencarian dengan menampilkan referensi
+                        dari layanan pihak ketiga, seperti Pinterest, Bing
+                        Image, dan YouTube, selain sumber utama SwitchLens
+                        (Pexels, Pixabay, dan Unsplash).
+                    </p>
 
-<div class="token-modal">
-    <div class="modal-box">
-        <h2>Pexels API Key Required</h2>
-        <p>Tidak ada token yang tersedia.
-            Masukkan API Key Pexels untuk melanjutkan.</p>
-        <input id="tokenInput" type="text" placeholder="Masukkan API Key">
+                    <p style="margin-bottom: 12px">
+                        Karena berasal dari layanan eksternal, informasi yang
+                        tersedia pada setiap hasil dapat berbeda-beda. Dengan
+                        melanjutkan, kamu memahami bahwa:
+                    </p>
 
-        <button id="saveToken">Simpan</button>
-    </div>
-</div>
+                    <p style="margin-bottom: 12px">
+                        <strong>1. Informasi lisensi dapat berbeda.</strong
+                        ><br />
+                        Tidak semua hasil menyediakan informasi mengenai
+                        fotografer, pemilik karya, sumber asli, maupun lisensi
+                        penggunaan. SwitchLens tidak dapat memverifikasi
+                        keakuratan informasi tersebut.
+                    </p>
 
-<div class="token-modal" id="messageModal">
-    <div class="modal-box" style="text-align: center; max-width: 380px; padding: 30px 25px;">
-        <h2 id="messageTitle" style="color: var(--text-primary); margin-bottom: 12px; font-size: 1.4rem;">Pemberitahuan</h2>
-        <p id="messageBody" style="font-size: 0.95rem; color: var(--text-secondary); margin-bottom: 25px; line-height: 1.6;">Pesan di sini</p>
-        <button id="closeMessageBtn">Tutup</button>
-    </div>
-</div>
+                    <p style="margin-bottom: 12px">
+                        <strong
+                            >2. Konten tetap dimiliki oleh pemiliknya.</strong
+                        ><br />
+                        SwitchLens tidak mengunggah ulang, menyimpan, ataupun
+                        mengklaim kepemilikan atas konten yang berasal dari
+                        layanan pihak ketiga. Hasil hanya ditampilkan sebagai
+                        referensi sesuai data yang tersedia.
+                    </p>
 
-<div class="token-modal" id="advancedTosModal">
-    <div class="modal-box" style="text-align: left; max-width: 480px; padding: 30px 25px;">
-      <h2 style="color: var(--text-primary); margin-bottom: 12px; font-size: 1.3rem; text-align: center;">
-          ⚠️ Advanced Search (Experimental)
-      </h2>
-  
-      <div style="font-size: 0.88rem; color: var(--text-secondary); margin-bottom: 20px; line-height: 1.7; max-height: 45vh; overflow-y: auto; padding-right: 4px;">
-  
-          <p style="margin-bottom: 12px;">
-              Advanced Search adalah fitur eksperimental yang memperluas hasil pencarian dengan menampilkan referensi dari layanan pihak ketiga, seperti Pinterest, Bing Image, dan YouTube, selain sumber utama SwitchLens (Pexels, Pixabay, dan Unsplash).
-          </p>
-  
-          <p style="margin-bottom: 12px;">
-              Karena berasal dari layanan eksternal, informasi yang tersedia pada setiap hasil dapat berbeda-beda. Dengan melanjutkan, kamu memahami bahwa:
-          </p>
-  
-          <p style="margin-bottom: 12px;">
-              <strong>1. Informasi lisensi dapat berbeda.</strong><br>
-              Tidak semua hasil menyediakan informasi mengenai fotografer, pemilik karya, sumber asli, maupun lisensi penggunaan. SwitchLens tidak dapat memverifikasi keakuratan informasi tersebut.
-          </p>
-  
-          <p style="margin-bottom: 12px;">
-              <strong>2. Konten tetap dimiliki oleh pemiliknya.</strong><br>
-              SwitchLens tidak mengunggah ulang, menyimpan, ataupun mengklaim kepemilikan atas konten yang berasal dari layanan pihak ketiga. Hasil hanya ditampilkan sebagai referensi sesuai data yang tersedia.
-          </p>
-  
-          <p style="margin-bottom: 12px;">
-              <strong>3. Pastikan memeriksa hak penggunaan.</strong><br>
-              Sebelum menggunakan gambar, video, atau media lainnya untuk keperluan publikasi, komersial, maupun distribusi ulang, pengguna disarankan memeriksa lisensi dan ketentuan penggunaan pada sumber aslinya.
-          </p>
-  
-          <p style="margin-bottom: 12px;">
-              <strong>4. Ketersediaan hasil tidak dijamin.</strong><br>
-              Hasil pencarian bergantung pada layanan pihak ketiga dan dapat berubah, dibatasi, atau dihentikan sewaktu-waktu tanpa pemberitahuan.
-          </p>
-  
-          <p>
-              Dengan mengaktifkan fitur ini, kamu menyatakan telah memahami bahwa Advanced Search merupakan fitur eksperimental dan bersedia menggunakan hasil pencarian secara bertanggung jawab sesuai ketentuan yang berlaku pada masing-masing penyedia konten.
-          </p>
-  
-      </div>
-  
-      <div style="display: flex; gap: 10px;">
-          <button id="advancedTosCancelBtn"
-              style="flex: 1; background: transparent; color: var(--text-secondary); border: 1px solid var(--border-color, #ccc);">
-              Batal
-          </button>
-  
-          <button id="advancedTosAgreeBtn" style="flex: 1;">
-              Saya Mengerti & Lanjutkan
-          </button>
-      </div>
-  </div>
-</div>
+                    <p style="margin-bottom: 12px">
+                        <strong>3. Pastikan memeriksa hak penggunaan.</strong
+                        ><br />
+                        Sebelum menggunakan gambar, video, atau media lainnya
+                        untuk keperluan publikasi, komersial, maupun distribusi
+                        ulang, pengguna disarankan memeriksa lisensi dan
+                        ketentuan penggunaan pada sumber aslinya.
+                    </p>
 
-<button id="providerFilterFab" title="Filter Sumber">
-  <span id="providerFilterFabIcon">🔀</span>
-</button>
+                    <p style="margin-bottom: 12px">
+                        <strong>4. Ketersediaan hasil tidak dijamin.</strong
+                        ><br />
+                        Hasil pencarian bergantung pada layanan pihak ketiga dan
+                        dapat berubah, dibatasi, atau dihentikan sewaktu-waktu
+                        tanpa pemberitahuan.
+                    </p>
 
-<div class="token-modal" id="providerFilterModal">
-  <div class="modal-box" style="text-align: center; max-width: 400px; padding: 28px 22px;">
-    <h2 style="color: var(--text-primary); margin-bottom: 8px; font-size: 1.25rem;">Filter Sumber Konten</h2>
-    <p style="font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 20px; line-height: 1.5;">
-      Nonaktifkan sumber yang tidak ingin ditampilkan. Klik "Semua" untuk menampilkan ulang semua sumber.
-    </p>
+                    <p>
+                        Dengan mengaktifkan fitur ini, kamu menyatakan telah
+                        memahami bahwa Advanced Search merupakan fitur
+                        eksperimental dan bersedia menggunakan hasil pencarian
+                        secara bertanggung jawab sesuai ketentuan yang berlaku
+                        pada masing-masing penyedia konten.
+                    </p>
+                </div>
 
-    <div id="providerFilterGrid" style="display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; margin-bottom: 20px;">
-      <button class="provider-filter-btn provider-all active" data-provider="all">Semua</button>
-      <button class="provider-filter-btn" data-provider="Pexels">Pexels</button>
-      <button class="provider-filter-btn" data-provider="Pixabay">Pixabay</button>
-      <button class="provider-filter-btn" data-provider="Unsplash">Unsplash</button>
-      <button class="provider-filter-btn" data-provider="Pinterest">Pinterest</button>
-      <button class="provider-filter-btn" data-provider="Bing">Bing</button>
-      <button class="provider-filter-btn" data-provider="YouTube">YouTube</button>
-    </div>
+                <div style="display: flex; gap: 10px">
+                    <button
+                        id="advancedTosCancelBtn"
+                        style="
+                            flex: 1;
+                            background: transparent;
+                            color: var(--text-secondary);
+                            border: 1px solid var(--border-color, #ccc);
+                        "
+                    >
+                        Batal
+                    </button>
 
-    <button id="closeProviderFilterBtn" style="width: 100%;">Tutup</button>
-  </div>
-</div>
+                    <button id="advancedTosAgreeBtn" style="flex: 1">
+                        Saya Mengerti & Lanjutkan
+                    </button>
+                </div>
+            </div>
+        </div>
 
-<footer>
-  <p>&copy; 2026 | Built by Iyann99</p>
-</footer>
+        <button id="providerFilterFab" title="Filter Sumber">
+            <span id="providerFilterFabIcon">🔀</span>
+        </button>
 
-<script src="js/search-history.js" defer></script>
-<script src="js/slider.js" defer></script>
-<script src="js/floating-search.js" defer></script>
-<script src="js/provider-filter.js" defer></script>
-<script src="js/auth.js" defer></script>
-<script src="js/config.js" defer></script>
-<script src="js/button.js" defer></script>
-<script src="js/main.js" defer></script>
-<script src="js/video.js" defer></script>
-<script src="js/register-sw.js" defer></script>
-</body>
+        <div class="token-modal" id="providerFilterModal">
+            <div
+                class="modal-box"
+                style="text-align: center; max-width: 400px; padding: 28px 22px"
+            >
+                <h2
+                    style="
+                        color: var(--text-primary);
+                        margin-bottom: 8px;
+                        font-size: 1.25rem;
+                    "
+                >
+                    Filter Sumber Konten
+                </h2>
+                <p
+                    style="
+                        font-size: 0.85rem;
+                        color: var(--text-secondary);
+                        margin-bottom: 20px;
+                        line-height: 1.5;
+                    "
+                >
+                    Nonaktifkan sumber yang tidak ingin ditampilkan. Klik
+                    "Semua" untuk menampilkan ulang semua sumber.
+                </p>
+
+                <div
+                    id="providerFilterGrid">
+                    <button
+                        class="provider-filter-btn provider-all active"
+                        data-provider="all"
+                    >
+                        Semua
+                    </button>
+                    <button class="provider-filter-btn" data-provider="Pexels">
+                        Pexels
+                    </button>
+                    <button class="provider-filter-btn" data-provider="Pixabay">
+                        Pixabay
+                    </button>
+                    <button
+                        class="provider-filter-btn"
+                        data-provider="Unsplash"
+                    >
+                        Unsplash
+                    </button>
+                    <button
+                        class="provider-filter-btn"
+                        data-provider="Wikimedia"
+                    >
+                        Wikimedia
+                    </button>
+                    <button
+                        class="provider-filter-btn"
+                        data-provider="NASA"
+                    >
+                        NASA
+                    </button>
+                    <button
+                        class="provider-filter-btn"
+                        data-provider="Pinterest"
+                    >
+                        Pinterest
+                    </button>
+                    <button class="provider-filter-btn" data-provider="Bing">
+                        Bing
+                    </button>
+                    <button class="provider-filter-btn" data-provider="YouTube">
+                        YouTube
+                    </button>
+                </div>
+
+                <button id="closeProviderFilterBtn" style="width: 100%">
+                    Tutup
+                </button>
+            </div>
+        </div>
+
+        <footer>
+            <p>&copy; 2026 | Built by Iyann99</p>
+        </footer>
+
+        <script src="js/search-history.js" defer></script>
+        <script src="js/slider.js" defer></script>
+        <script src="js/floating-search.js" defer></script>
+        <script src="js/provider-filter.js" defer></script>
+        <script src="js/auth.js" defer></script>
+        <script src="js/config.js" defer></script>
+        <script src="js/button.js" defer></script>
+        <script src="js/main.js" defer></script>
+        <script src="js/video.js" defer></script>
+        <script src="js/register-sw.js" defer></script>
+    </body>
 </html>

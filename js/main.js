@@ -3,7 +3,8 @@ const lang = browserLang.startsWith('id') ? 'id' : 'en';
 
 async function getPhotos(query, pageNum, language) {
     const loaderEl = document.getElementById('loader');
-    
+    const encodedQuery = query === "curated" ? query : encodeURIComponent(query);
+
     try {
         loading = true;
         if (pageNum === 1) {
@@ -11,6 +12,7 @@ async function getPhotos(query, pageNum, language) {
         }
 
         let combinedPhotos = [];
+        let isRelevant = true;
 
         if (pexelsToken || pixabayToken) {
             let pexelsPhotos = [];
@@ -20,7 +22,7 @@ async function getPhotos(query, pageNum, language) {
                 try {
                     const pexelsURL = query === "curated" 
                         ? `${pexelsBaseURL}/curated?page=${pageNum}&per_page=15`
-                        : `${pexelsBaseURL}/search?query=${query}&page=${pageNum}&per_page=15`;
+                        : `${pexelsBaseURL}/search?query=${encodedQuery}&page=${pageNum}&per_page=15`;
 
                     const response = await fetch(pexelsURL, {
                         headers: { 'Authorization': pexelsToken, "Accept-Language": language }
@@ -66,7 +68,7 @@ async function getPhotos(query, pageNum, language) {
         else {
             try {
                 const isAdvanced = typeof isAdvancedModeActive === 'function' && isAdvancedModeActive();
-                const workerUrl = `${typeof WORKER_BASE_URL !== 'undefined' ? WORKER_BASE_URL : ''}/photos?query=${query}&page=${pageNum}&lang=${language}${isAdvanced ? '&advanced=true' : ''}`;
+                const workerUrl = `${typeof WORKER_BASE_URL !== 'undefined' ? WORKER_BASE_URL : ''}/photos?query=${encodedQuery}&page=${pageNum}&lang=${language}${isAdvanced ? '&advanced=true' : ''}`;
 
                 const fetchHeaders = {};
                 if (isAdvanced && typeof getAccessToken === 'function') {
@@ -79,6 +81,7 @@ async function getPhotos(query, pageNum, language) {
                     const data = await response.json();
                     
                     combinedPhotos = data.photos || data || []; 
+                    isRelevant = data.relevant !== false;
                     
                     if (typeof incrementFreeUsage === 'function') {
                         incrementFreeUsage(combinedPhotos.length);
@@ -103,34 +106,58 @@ async function getPhotos(query, pageNum, language) {
             if (loaderEl) loaderEl.style.display = "block";
         }
 
+        if (pageNum === 1 && !isRelevant && query !== "curated") {
+            const notice = document.createElement("p");
+            notice.style.cssText = "text-align:center; width:100%; color:var(--text-secondary); padding: 10px 20px;";
+            notice.textContent = "Tidak dapat menemukan konten yang Anda cari. Berikut hasil lain yang mungkin menarik:";
+            gallery.appendChild(notice);
+        }
+
         const fragment = document.createDocumentFragment();
         combinedPhotos.forEach(({ photographer, alt, medium, large, provider, profileUrl, downloadLocation, licenseInfo }) => {
+            if (typeof getSanitizedMediaUrl === 'function' && (!getSanitizedMediaUrl(medium) || !getSanitizedMediaUrl(large))) {
+                return;
+            }
+
             const card = document.createElement("div");
             card.className = "media-card photo-card";
             
             const favStatus = isFavorite(medium) ? '❤️' : '🤍';
             const favClass = isFavorite(medium) ? 'active' : '';
 
-            const attributionHtml = profileUrl
-                ? `<a href="${profileUrl}" target="_blank" rel="noopener noreferrer" class="photographer-link">${photographer}</a> (${provider}${licenseInfo ? ` · ${licenseInfo}` : ''})`
-                : `${photographer} (${provider})`;
+            const safeAlt = escapeHtml(alt || 'Untitled');
+            const safePhotographer = escapeHtml(photographer || 'Unknown');
+            const safeProvider = escapeHtml(provider || '');
+            const safeLicenseInfo = licenseInfo ? escapeHtml(licenseInfo) : '';
+            const safeMedium = escapeHtml(medium);
+            const safeLarge = escapeHtml(large);
+            const safeProfileUrl = profileUrl && typeof getSanitizedMediaUrl === 'function'
+                ? getSanitizedMediaUrl(profileUrl)
+                : null;
+            const safeDownloadLocation = downloadLocation && typeof getSanitizedMediaUrl === 'function'
+                ? getSanitizedMediaUrl(downloadLocation)
+                : null;
+
+            const attributionHtml = safeProfileUrl
+                ? `<a href="${escapeHtml(safeProfileUrl)}" target="_blank" rel="noopener noreferrer" class="photographer-link">${safePhotographer}</a> (${safeProvider}${safeLicenseInfo ? ` · ${safeLicenseInfo}` : ''})`
+                : `${safePhotographer} (${safeProvider})`;
 
             card.innerHTML = `
                 <div class="image-wrapper">
-                    <img src="${medium}" data-highres="${large}" alt="${alt || 'Photo'}" loading="lazy" class="lazy-photo-img">
+                    <img src="${safeMedium}" data-highres="${safeLarge}" alt="${safeAlt}" loading="lazy" class="lazy-photo-img">
                 </div>
                 <div class="card-info">
-                    <h3 class="card-title">${alt || 'Untitled'}</h3>
+                    <h3 class="card-title">${safeAlt}</h3>
                     <div class="card-footer">
                         <span class="api-tag">${attributionHtml}</span>
                         <div class="card-actions">
-                            <button class="action-btn btn-fav ${favClass}" data-type="photo" data-src="${medium}" data-highres="${large}" data-title="${alt || 'Untitled'}" data-author="${photographer}" data-provider="${provider}">
+                            <button class="action-btn btn-fav ${favClass}" data-type="photo" data-src="${safeMedium}" data-highres="${safeLarge}" data-title="${safeAlt}" data-author="${safePhotographer}" data-provider="${safeProvider}">
                                 ${favStatus}
                             </button>
-                            <button class="action-btn btn-download" data-url="${large}" ${downloadLocation ? `data-download-location="${downloadLocation}"` : ''}>⬇️</button>
+                            <button class="action-btn btn-download" data-url="${safeLarge}" ${safeDownloadLocation ? `data-download-location="${escapeHtml(safeDownloadLocation)}"` : ''}>⬇️</button>
                       <button class="action-btn btn-share" 
-                              data-url="${large}" 
-                              data-title="${alt || 'Untitled'}">
+                              data-url="${safeLarge}" 
+                              data-title="${safeAlt}">
                               🔗
                           </button>
                         </div>
