@@ -1031,6 +1031,7 @@ footer {
 
 footer a {
     text-decoration: none;
+    color: var(--text-secondary);
 }
 
 @media (max-width: 480px) {
