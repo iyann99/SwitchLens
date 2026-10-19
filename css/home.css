@@ -1029,6 +1029,10 @@ footer {
     background-color: #006699;
 }
 
+footer {
+    text-decoration: none;
+}
+
 @media (max-width: 480px) {
     #providerFilterFab {
         bottom: 20px;
