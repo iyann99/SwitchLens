@@ -44,7 +44,8 @@
       <label for="passwordConfirm">Konfirmasi Password</label>
       <input type="password" id="passwordConfirm" name="passwordConfirm" placeholder="Ulangi password" required autocomplete="new-password" minlength="6">
 
-      <div class="cf-turnstile" data-sitekey="0x4AAAAAAD-PpjPvSwIM3gjA" data-theme="light" style="margin-top: 16px;"></div>
+      <div id="turnstileWidget" class="turnstile-slot" data-sitekey="0x4AAAAAAD-PpjPvSwIM3gjA" data-theme="light"></div>
+      <div id="turnstileStatus" class="turnstile-status" role="status" aria-live="polite" hidden></div>
 
       <div id="authError" class="auth-error" hidden></div>
 
@@ -67,7 +68,8 @@
   <p>&copy; 2026 | Built by Iyan99</p>
 </footer>
 
-<script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
+<script src="https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit" async defer></script>
+<script src="js/turnstile.js" defer></script>
 <script src="js/config.js" defer></script>
 <script src="js/auth.js" defer></script>
 <script src="js/register-sw.js" defer></script>
