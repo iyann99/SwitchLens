@@ -2,12 +2,12 @@ const browserLang = navigator.language;
 const lang = browserLang.startsWith('id') ? 'id' : 'en';
 
 async function getPhotos(query, pageNum, language) {
-    const loaderEl = document.getElementById('loader');
     const encodedQuery = query === "curated" ? query : encodeURIComponent(query);
     const generation = pageNum === 1 ? ++searchGeneration : searchGeneration;
 
     try {
         loading = true;
+        if (pageNum === 1) resetPagination();
         if (pageNum === 1) {
             gallery.innerHTML = '<p style="text-align:center; width:100%; color:var(--text-secondary);">Mengambil foto...</p>';
         }
@@ -15,6 +15,8 @@ async function getPhotos(query, pageNum, language) {
         let combinedPhotos = [];
         let isRelevant = true;
         let quotaExceeded = false;
+        let requestFailed = false;
+        let timedOut = false;
 
         if (pexelsToken || pixabayToken) {
             let pexelsPhotos = [];
@@ -26,7 +28,7 @@ async function getPhotos(query, pageNum, language) {
                         ? `${pexelsBaseURL}/curated?page=${pageNum}&per_page=15`
                         : `${pexelsBaseURL}/search?query=${encodedQuery}&page=${pageNum}&per_page=15`;
 
-                    const response = await fetch(pexelsURL, {
+                    const response = await fetchWithTimeout(pexelsURL, {
                         headers: { 'Authorization': pexelsToken, "Accept-Language": language }
                     });
 
@@ -48,7 +50,7 @@ async function getPhotos(query, pageNum, language) {
             if (pixabayToken) {
                 try {
                     const pixabayQuery = query === "curated" ? "" : encodeURIComponent(query);
-                    const response = await fetch(`${pixabayBaseURL}/?key=${pixabayToken}&q=${pixabayQuery}&page=${pageNum}&per_page=15&lang=${language}&image_type=photo`);
+                    const response = await fetchWithTimeout(`${pixabayBaseURL}/?key=${pixabayToken}&q=${pixabayQuery}&page=${pageNum}&per_page=15&lang=${language}&image_type=photo`);
 
                     if (response.status === 400 || response.status === 401) {
                          handleUnauthorizedError('Pixabay');
@@ -77,7 +79,7 @@ async function getPhotos(query, pageNum, language) {
                     fetchHeaders['Authorization'] = `Bearer ${getAccessToken()}`;
                 }
 
-                const response = await fetch(workerUrl, { headers: fetchHeaders });
+                const response = await fetchWithTimeout(workerUrl, { headers: fetchHeaders });
                 
                 if (response.ok) {
                     const data = await response.json();
@@ -90,28 +92,35 @@ async function getPhotos(query, pageNum, language) {
                     }
                 } else {
                     quotaExceeded = response.status === 429;
+                    requestFailed = !quotaExceeded;
                     console.error("Worker error atau limit dari server");
                 }
             } catch (err) {
+                requestFailed = true;
+                timedOut = !!err && err.name === 'AbortError';
                 console.error("Gagal fetch dari worker:", err);
             }
         }
 
         if (generation !== searchGeneration) return;
 
-        if (pageNum === 1) gallery.innerHTML = "";
-
         if (combinedPhotos.length === 0) {
-            if (pageNum === 1) {
-                gallery.innerHTML = quotaExceeded
-                    ? '<p style="text-align:center; width:100%; color:var(--text-secondary);">Kuota permintaan gratis untuk 3 jam ini sudah habis. Coba lagi nanti atau gunakan API Key pribadi.</p>'
-                    : '<p style="text-align:center; width:100%; color:var(--text-secondary);">Tidak ada foto yang ditemukan.</p>';
+            if (requestFailed) {
+                handleLoadFailure(pageNum, timedOut);
+                return;
             }
-            if (loaderEl) loaderEl.style.display = "none";
+            if (quotaExceeded) {
+                renderGalleryMessage('Kuota permintaan gratis untuk 3 jam ini sudah habis. Coba lagi nanti atau gunakan API Key pribadi.', { replace: pageNum === 1 });
+            } else if (pageNum === 1) {
+                renderGalleryMessage('Tidak ada foto yang ditemukan.', { replace: true });
+            }
+            endPagination();
             return;
-        } else {
-            if (loaderEl) loaderEl.style.display = "block";
         }
+
+        if (pageNum === 1) gallery.innerHTML = "";
+        clearGalleryNotice();
+        const visibleBefore = pageNum === 1 ? 0 : countVisibleCards();
 
         if (pageNum === 1 && !isRelevant && query !== "curated") {
             const notice = document.createElement("p");
@@ -187,10 +196,12 @@ async function getPhotos(query, pageNum, language) {
             applyProviderFilterToGallery();
         }
 
+        registerPageResult(countVisibleCards() - visibleBefore);
+
     } catch (err) {
         console.error("Gagal mengambil foto:", err);
-        if (pageNum === 1) {
-            gallery.innerHTML = '<p style="text-align:center; width:100%; color:red;">Gagal memuat data. Coba lagi.</p>';
+        if (generation === searchGeneration) {
+            handleLoadFailure(pageNum, !!err && err.name === 'AbortError');
         }
     } finally {
         if (generation === searchGeneration) loading = false;
@@ -200,11 +211,17 @@ async function getPhotos(query, pageNum, language) {
 const loader = document.querySelector('#loader');
 
 const observer = new IntersectionObserver(entries => {
-    if (entries[0].isIntersecting && !loading) {
+    if (entries[0].isIntersecting && !loading && hasMore) {
         page++;
         triggerFetch();
     }
 });
+
+function rewatchLoader() {
+    if (!loader) return;
+    observer.unobserve(loader);
+    observer.observe(loader);
+}
 
 if (loader) observer.observe(loader);
 

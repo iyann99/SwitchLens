@@ -77,6 +77,103 @@ let loading = false;
 let currentQuery = "curated";
 let currentMode = "photo";
 let searchGeneration = 0;
+let hasMore = true;
+let emptyStreak = 0;
+let failedPage = 1;
+
+const REQUEST_TIMEOUT_MS = 25000;
+const MAX_EMPTY_STREAK = 3;
+
+async function fetchWithTimeout(url, options = {}, timeoutMs = REQUEST_TIMEOUT_MS) {
+    const controller = new AbortController();
+    const timer = setTimeout(() => controller.abort(), timeoutMs);
+    try {
+        return await fetch(url, { ...options, signal: controller.signal });
+    } finally {
+        clearTimeout(timer);
+    }
+}
+
+function setLoaderVisible(visible) {
+    const loaderEl = document.getElementById('loader');
+    if (loaderEl) loaderEl.style.display = visible ? 'block' : 'none';
+}
+
+function resetPagination() {
+    hasMore = true;
+    emptyStreak = 0;
+    clearGalleryNotice();
+    setLoaderVisible(true);
+}
+
+function endPagination() {
+    hasMore = false;
+    setLoaderVisible(false);
+}
+
+function countVisibleCards() {
+    if (!gallery) return 0;
+    return Array.from(gallery.querySelectorAll('.media-card')).filter(card => card.style.display !== 'none').length;
+}
+
+function registerPageResult(addedVisible) {
+    if (addedVisible > 0) {
+        emptyStreak = 0;
+    } else {
+        emptyStreak += 1;
+        if (emptyStreak >= MAX_EMPTY_STREAK) endPagination();
+    }
+    if (hasMore && typeof rewatchLoader === 'function') rewatchLoader();
+}
+
+function clearGalleryNotice() {
+    if (!gallery) return;
+    gallery.querySelectorAll('.gallery-notice').forEach(node => node.remove());
+}
+
+function renderGalleryMessage(text, { retry = false, replace = false } = {}) {
+    if (!gallery) return;
+    if (replace) gallery.innerHTML = '';
+    clearGalleryNotice();
+
+    const notice = document.createElement('div');
+    notice.className = 'gallery-notice';
+
+    const message = document.createElement('p');
+    message.textContent = text;
+    notice.appendChild(message);
+
+    if (retry) {
+        const retryBtn = document.createElement('button');
+        retryBtn.type = 'button';
+        retryBtn.className = 'gallery-retry';
+        retryBtn.textContent = 'Coba lagi';
+        retryBtn.addEventListener('click', retryLoad);
+        notice.appendChild(retryBtn);
+    }
+
+    gallery.appendChild(notice);
+}
+
+function handleLoadFailure(pageNum, timedOut) {
+    failedPage = pageNum;
+    endPagination();
+    renderGalleryMessage(
+        timedOut
+            ? 'Server terlalu lama merespons. Periksa koneksi lalu coba lagi.'
+            : 'Gagal memuat data. Coba lagi.',
+        { retry: true, replace: pageNum === 1 }
+    );
+}
+
+function retryLoad() {
+    clearGalleryNotice();
+    hasMore = true;
+    emptyStreak = 0;
+    setLoaderVisible(true);
+    page = failedPage;
+    triggerFetch();
+}
 
 let pexelsToken = localStorage.getItem("pexels_token") || "";
 let pixabayToken = localStorage.getItem("pixabay_token") || "";

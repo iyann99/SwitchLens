@@ -4,4 +4,4 @@ Disallow: /favorites.html
 Disallow: /login.html
 Disallow: /register.html
 
-Sitemap: https://switchlens.vercel.app/sitemap.xml
+Sitemap: https://switchlens.my.id/sitemap.xml

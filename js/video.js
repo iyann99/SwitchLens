@@ -17,12 +17,15 @@ async function getVideos(query, pageNum, language) {
         loading = true;
 
         if (pageNum === 1) {
+            resetPagination();
             gallery.innerHTML = '<p style="text-align:center; width:100%; color:var(--text-secondary);">Mengambil video...</p>';
         }
 
         let combinedVideos = [];
         let isRelevant = true;
         let quotaExceeded = false;
+        let requestFailed = false;
+        let timedOut = false;
 
         if (pexelsToken || pixabayToken) {
             let pexelsVideos = [];
@@ -35,7 +38,7 @@ async function getVideos(query, pageNum, language) {
                     : `${pexelsBaseURL}/videos/search?query=${pexelsQuery}&page=${pageNum}&per_page=8`;
 
                 try {
-                    const pexelsRes = await fetch(pexelsURL, { headers: { 'Authorization': pexelsToken } });
+                    const pexelsRes = await fetchWithTimeout(pexelsURL, { headers: { 'Authorization': pexelsToken } });
                     if (pexelsRes.status === 401) {
                         handleUnauthorizedError('Pexels');
                     } else if (pexelsRes.ok) {
@@ -56,7 +59,7 @@ async function getVideos(query, pageNum, language) {
                 const pixabayURL = `${pixabayBaseURL}/videos/?key=${pixabayToken}&q=${pixabayQuery}&page=${pageNum}&per_page=8&lang=${language}`;
 
                 try {
-                    const pixabayRes = await fetch(pixabayURL);
+                    const pixabayRes = await fetchWithTimeout(pixabayURL);
                     if (pixabayRes.status === 401 || pixabayRes.status === 400) {
                         handleUnauthorizedError('Pixabay');
                     } else if (pixabayRes.ok) {
@@ -94,7 +97,7 @@ async function getVideos(query, pageNum, language) {
                     fetchHeaders['Authorization'] = `Bearer ${getAccessToken()}`;
                 }
 
-                const response = await fetch(workerUrl, { headers: fetchHeaders });
+                const response = await fetchWithTimeout(workerUrl, { headers: fetchHeaders });
                 
                 if (response.ok) {
                     const data = await response.json();
@@ -107,23 +110,35 @@ async function getVideos(query, pageNum, language) {
                     }
                 } else {
                     quotaExceeded = response.status === 429;
+                    requestFailed = !quotaExceeded;
                     console.error("Worker error atau limit dari server");
                 }
             } catch (err) {
+                requestFailed = true;
+                timedOut = !!err && err.name === 'AbortError';
                 console.error("Gagal fetch dari worker:", err);
             }
         }
 
         if (generation !== searchGeneration) return;
 
-        if (pageNum === 1) gallery.innerHTML = "";
-
-        if (combinedVideos.length === 0 && pageNum === 1) {
-            gallery.innerHTML = quotaExceeded
-                ? '<p style="text-align:center; width:100%; color:var(--text-secondary);">Kuota permintaan gratis untuk 3 jam ini sudah habis. Coba lagi nanti atau gunakan API Key pribadi.</p>'
-                : '<p style="text-align:center; width:100%; color:var(--text-secondary);">Video tidak ditemukan.</p>';
+        if (combinedVideos.length === 0) {
+            if (requestFailed) {
+                handleLoadFailure(pageNum, timedOut);
+                return;
+            }
+            if (quotaExceeded) {
+                renderGalleryMessage('Kuota permintaan gratis untuk 3 jam ini sudah habis. Coba lagi nanti atau gunakan API Key pribadi.', { replace: pageNum === 1 });
+            } else if (pageNum === 1) {
+                renderGalleryMessage('Video tidak ditemukan.', { replace: true });
+            }
+            endPagination();
             return;
         }
+
+        if (pageNum === 1) gallery.innerHTML = "";
+        clearGalleryNotice();
+        const visibleBefore = pageNum === 1 ? 0 : countVisibleCards();
 
         if (pageNum === 1 && !isRelevant && query !== "curated") {
             const notice = document.createElement("p");
@@ -197,9 +212,11 @@ async function getVideos(query, pageNum, language) {
             applyProviderFilterToGallery();
         }
 
+        registerPageResult(countVisibleCards() - visibleBefore);
+
     } catch (err) {
-        if (pageNum === 1) {
-            gallery.innerHTML = '<p style="text-align:center; width:100%; color:red;">Gagal memuat video. Coba lagi.</p>';
+        if (generation === searchGeneration) {
+            handleLoadFailure(pageNum, !!err && err.name === 'AbortError');
         }
     } finally {
         if (generation === searchGeneration) loading = false;

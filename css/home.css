@@ -1055,3 +1055,27 @@ footer a {
         padding: 0 4%;
     }
 }
+
+.gallery-notice {
+    grid-column: 1 / -1;
+    width: 100%;
+    padding: 24px 16px;
+    text-align: center;
+    color: var(--text-secondary);
+}
+
+.gallery-notice p {
+    margin: 0 0 12px;
+    line-height: 1.5;
+}
+
+.gallery-retry {
+    padding: 10px 22px;
+    border: 0;
+    border-radius: 999px;
+    background: var(--lens-color);
+    color: #fff;
+    font: inherit;
+    font-weight: 600;
+    cursor: pointer;
+}

@@ -1,17 +1,3 @@
-/**
- * Cloudflare Turnstile — pemuat widget yang tahan banting.
- *
- * Mengapa explicit render (bukan <div class="cf-turnstile"> otomatis):
- *  - Widget bawaan mencoba ulang tanpa batas saat error, sehingga terlihat
- *    "restart sendiri, putih, error lagi" dan penyebabnya tidak pernah tampil.
- *  - Di sini kode error ditampilkan ke pengguna, percobaan ulang otomatis
- *    dibatasi, dan error konfigurasi (domain belum didaftarkan) TIDAK diulang
- *    karena mengulang tidak akan pernah menyelesaikannya.
- *
- * Sitekey dibaca dari atribut data-sitekey pada #turnstileWidget.
- * auth.js tetap memakai turnstile.getResponse() / turnstile.reset() seperti
- * sebelumnya (hanya ada satu widget per halaman).
- */
 (function () {
   "use strict";
 
@@ -19,8 +5,6 @@
   var RETRY_DELAY_MS = 1500;
   var API_WAIT_TIMEOUT_MS = 15000;
   var API_POLL_MS = 100;
-
-  // Error yang disebabkan konfigurasi sitekey/domain — mengulang percuma.
   var CONFIG_ERRORS = /^(110[0-9]{3}|400[0-9]{3}|600010)$/;
 
   var container = document.getElementById("turnstileWidget");
@@ -84,7 +68,7 @@
 
     if (CONFIG_ERRORS.test(String(code))) {
       showStatus(describeError(code), false);
-      return true; // ditangani; hentikan retry otomatis bawaan
+      return true;
     }
 
     if (autoRetries < MAX_AUTO_RETRIES) {
@@ -104,14 +88,14 @@
       widgetId = window.turnstile.render(container, {
         sitekey: siteKey,
         theme: container.getAttribute("data-theme") || "light",
-        retry: "never",               // retry dikendalikan oleh onError di atas
+        retry: "never",
         "refresh-expired": "auto",
         callback: function () {
           autoRetries = 0;
           clearStatus();
         },
         "error-callback": onError,
-        "expired-callback": function () { /* refresh-expired menangani */ },
+        "expired-callback": function () { },
         "timeout-callback": function () { onError("timeout"); }
       });
     } catch (err) {
