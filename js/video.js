@@ -1,0 +1,367 @@
+function getSanitizedMediaUrl(url) {
+    if (!url || typeof url !== "string") return null;
+    try {
+        const parsed = new URL(url, window.location.href);
+        if (parsed.protocol !== "https:" && parsed.protocol !== "http:") return null;
+        return parsed.href;
+    } catch (e) {
+        return null;
+    }
+}
+
+async function getVideos(query, pageNum, language) {
+    const encodedQuery = query === "curated" ? query : encodeURIComponent(query);
+    const generation = pageNum === 1 ? ++searchGeneration : searchGeneration;
+
+    try {
+        loading = true;
+
+        if (pageNum === 1) {
+            gallery.innerHTML = '<p style="text-align:center; width:100%; color:var(--text-secondary);">Mengambil video...</p>';
+        }
+
+        let combinedVideos = [];
+        let isRelevant = true;
+        let quotaExceeded = false;
+
+        if (pexelsToken || pixabayToken) {
+            let pexelsVideos = [];
+            let pixabayVideos = [];
+
+            if (pexelsToken) {
+                const pexelsQuery = query === "curated" ? "popular" : query; 
+                const pexelsURL = query === "curated" 
+                    ? `${pexelsBaseURL}/videos/popular?page=${pageNum}&per_page=8`
+                    : `${pexelsBaseURL}/videos/search?query=${pexelsQuery}&page=${pageNum}&per_page=8`;
+
+                try {
+                    const pexelsRes = await fetch(pexelsURL, { headers: { 'Authorization': pexelsToken } });
+                    if (pexelsRes.status === 401) {
+                        handleUnauthorizedError('Pexels');
+                    } else if (pexelsRes.ok) {
+                        const data = await pexelsRes.json();
+                        pexelsVideos = data.videos.map(vid => ({
+                            provider: 'Pexels',
+                            author: vid.user.name,
+                            title: `Video oleh ${vid.user.name}`,
+                            thumbnail: vid.image,
+                            videoSrc: vid.video_files.find(f => f.quality === 'hd' || f.quality === 'sd')?.link || vid.video_files[0]?.link
+                        }));
+                    }
+                } catch (e) { console.error(e); }
+            }
+
+            if (pixabayToken) {
+                const pixabayQuery = query === "curated" ? "" : encodeURIComponent(query);
+                const pixabayURL = `${pixabayBaseURL}/videos/?key=${pixabayToken}&q=${pixabayQuery}&page=${pageNum}&per_page=8&lang=${language}`;
+
+                try {
+                    const pixabayRes = await fetch(pixabayURL);
+                    if (pixabayRes.status === 401 || pixabayRes.status === 400) {
+                        handleUnauthorizedError('Pixabay');
+                    } else if (pixabayRes.ok) {
+                        const data = await pixabayRes.json();
+                        pixabayVideos = data.hits.map(vid => {
+
+                            const thumb =
+                                vid.videos?.medium?.thumbnail ||
+                                vid.videos?.small?.thumbnail ||
+                                vid.videos?.large?.thumbnail ||
+                                vid.videos?.tiny?.thumbnail ||
+                                'assets/no-image.jpg';
+
+                            return {
+                                provider: 'Pixabay',
+                                author: vid.user,
+                                title: vid.tags || 'Pixabay Video',
+                                thumbnail: thumb,
+                                videoSrc: vid.videos.medium?.url || vid.videos.small?.url
+                            };
+                        });
+                    }
+                } catch (e) { console.error(e); }
+            }
+            
+            combinedVideos = [...pexelsVideos, ...pixabayVideos];
+        }
+        else {
+            try {
+                const isAdvanced = typeof isAdvancedModeActive === 'function' && isAdvancedModeActive();
+                const workerUrl = `${typeof WORKER_BASE_URL !== 'undefined' ? WORKER_BASE_URL : ''}/videos?query=${encodedQuery}&page=${pageNum}&lang=${language}${isAdvanced ? '&advanced=true' : ''}`;
+
+                const fetchHeaders = {};
+                if (isAdvanced && typeof getAccessToken === 'function') {
+                    fetchHeaders['Authorization'] = `Bearer ${getAccessToken()}`;
+                }
+
+                const response = await fetch(workerUrl, { headers: fetchHeaders });
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    
+                    combinedVideos = data.videos || data || [];
+                    isRelevant = data.relevant !== false;
+                    
+                    if (typeof incrementFreeUsage === 'function') {
+                        incrementFreeUsage(combinedVideos.length);
+                    }
+                } else {
+                    quotaExceeded = response.status === 429;
+                    console.error("Worker error atau limit dari server");
+                }
+            } catch (err) {
+                console.error("Gagal fetch dari worker:", err);
+            }
+        }
+
+        if (generation !== searchGeneration) return;
+
+        if (pageNum === 1) gallery.innerHTML = "";
+
+        if (combinedVideos.length === 0 && pageNum === 1) {
+            gallery.innerHTML = quotaExceeded
+                ? '<p style="text-align:center; width:100%; color:var(--text-secondary);">Kuota permintaan gratis untuk 3 jam ini sudah habis. Coba lagi nanti atau gunakan API Key pribadi.</p>'
+                : '<p style="text-align:center; width:100%; color:var(--text-secondary);">Video tidak ditemukan.</p>';
+            return;
+        }
+
+        if (pageNum === 1 && !isRelevant && query !== "curated") {
+            const notice = document.createElement("p");
+            notice.style.cssText = "text-align:center; width:100%; color:var(--text-secondary); padding: 10px 20px;";
+            notice.textContent = "Tidak dapat menemukan konten yang Anda cari. Berikut hasil lain yang mungkin menarik:";
+            gallery.appendChild(notice);
+        }
+
+        const fragment = document.createDocumentFragment();
+
+        combinedVideos.forEach(({ author, title, thumbnail, videoSrc, provider, isExternalLink, channelUrl }) => {
+            const safeVideoSrc = getSanitizedMediaUrl(videoSrc);
+            const safeThumbnail = getSanitizedMediaUrl(thumbnail);
+            if (!safeVideoSrc || !safeThumbnail) return;
+
+            const card = document.createElement("div");
+            card.className = "media-card video-card";
+            card.setAttribute("data-video", safeVideoSrc);
+            if (isExternalLink) {
+                card.setAttribute("data-external-link", "true");
+                card.setAttribute("data-provider", provider || "");
+            }
+
+            const favStatus = isFavorite(safeThumbnail) ? '❤️' : '🤍';
+            const favClass = isFavorite(safeThumbnail) ? 'active' : '';
+
+            const playIconHtml = isExternalLink
+                ? `<div class="play-icon" style="position:absolute; top:50%; left:50%; transform:translate(-50%, -50%); font-size:1.8rem; color:white; text-shadow: 0 0 10px rgba(0,0,0,0.5); pointer-events:none;">▶️</div>`
+                : `<div class="play-icon" style="position:absolute; top:50%; left:50%; transform:translate(-50%, -50%); font-size:2rem; color:white; text-shadow: 0 0 10px rgba(0,0,0,0.5); pointer-events:none;">&#9658;</div>`;
+
+            const safeTitle = escapeHtml(title || 'Untitled');
+            const safeAuthor = escapeHtml(author || 'Unknown');
+            const safeProvider = escapeHtml(provider || '');
+            const safeChannelUrl = channelUrl ? getSanitizedMediaUrl(channelUrl) : null;
+
+            const authorHtml = safeChannelUrl
+                ? `<a href="${escapeHtml(safeChannelUrl)}" target="_blank" rel="noopener noreferrer" class="channel-link">${safeAuthor}</a> (${safeProvider})`
+                : `${safeAuthor} (${safeProvider})`;
+
+            card.innerHTML = `
+                <div class="image-wrapper">
+                    <img src="${escapeHtml(safeThumbnail)}" alt="${safeTitle}" loading="lazy" class="lazy-photo-img">
+                    ${playIconHtml}
+                </div>
+                <div class="card-info">
+                    <h3 class="card-title">${safeTitle}</h3>
+                    <div class="card-footer">
+                        <span class="api-tag">${authorHtml}</span>
+                        <div class="card-actions">
+                            <button class="action-btn btn-fav ${favClass}" data-type="video" data-src="${escapeHtml(safeThumbnail)}" data-highres="${escapeHtml(safeVideoSrc)}" data-title="${safeTitle}" data-author="${safeAuthor}" data-provider="${safeProvider}" data-thumbnail="${escapeHtml(safeThumbnail)}">
+                                ${favStatus}
+                            </button>
+                            ${isExternalLink ? '' : `<button class="action-btn btn-download" data-url="${escapeHtml(safeVideoSrc)}">⬇️</button>`}
+                        </div>
+                    </div>
+                </div>
+            `;
+            fragment.appendChild(card);
+        });
+
+        gallery.appendChild(fragment);
+
+        gallery.querySelectorAll('.lazy-photo-img').forEach(img => {
+            img.addEventListener('error', function onImgError() {
+                this.removeEventListener('error', onImgError);
+                this.src = 'assets/no-image.jpg';
+            });
+        });
+
+        if (typeof applyProviderFilterToGallery === 'function') {
+            applyProviderFilterToGallery();
+        }
+
+    } catch (err) {
+        if (pageNum === 1) {
+            gallery.innerHTML = '<p style="text-align:center; width:100%; color:red;">Gagal memuat video. Coba lagi.</p>';
+        }
+    } finally {
+        if (generation === searchGeneration) loading = false;
+    }
+}
+
+function ensureYouTubeConfirmModal() {
+    let modal = document.getElementById("youtubeConfirmModal");
+    if (modal) return modal;
+
+    modal = document.createElement("div");
+    modal.id = "youtubeConfirmModal";
+    modal.className = "token-modal";
+    modal.innerHTML = `
+        <div class="modal-box" style="text-align: center; max-width: 380px; padding: 30px 25px;">
+            <h2 id="externalConfirmTitle" style="color: var(--text-primary); margin-bottom: 12px; font-size: 1.3rem;">▶️ Buka di YouTube</h2>
+            <p id="externalConfirmText" style="font-size: 0.92rem; color: var(--text-secondary); margin-bottom: 25px; line-height: 1.6;">
+                Video ini akan diputar langsung di YouTube. Kamu akan diarahkan keluar dari SwitchLens ke tab baru. Lanjutkan?
+            </p>
+            <div style="display: flex; gap: 10px;">
+                <button id="youtubeConfirmCancelBtn" style="flex: 1; background: transparent; color: var(--text-secondary); border: 1px solid var(--border-color, #ccc);">Batal</button>
+                <button id="youtubeConfirmProceedBtn" style="flex: 1;">Buka YouTube</button>
+            </div>
+        </div>
+    `;
+    document.body.appendChild(modal);
+    return modal;
+}
+
+function showYouTubeConfirmModal(videoUrl, providerName = "YouTube") {
+    const modal = ensureYouTubeConfirmModal();
+    const label = ["YouTube", "Bilibili"].includes(providerName) ? providerName : "situs sumber";
+
+    document.getElementById("externalConfirmTitle").textContent = `▶️ Buka di ${label}`;
+    document.getElementById("externalConfirmText").textContent =
+        `Video ini akan diputar langsung di ${label}. Kamu akan diarahkan keluar dari SwitchLens ke tab baru. Lanjutkan?`;
+    document.getElementById("youtubeConfirmProceedBtn").textContent = `Buka ${label}`;
+
+    modal.style.display = "flex";
+
+    const proceedBtn = document.getElementById("youtubeConfirmProceedBtn");
+    const cancelBtn = document.getElementById("youtubeConfirmCancelBtn");
+
+    const closeModal = () => { modal.style.display = "none"; };
+
+    const newProceedBtn = proceedBtn.cloneNode(true);
+    proceedBtn.parentNode.replaceChild(newProceedBtn, proceedBtn);
+    newProceedBtn.addEventListener("click", () => {
+        window.open(videoUrl, "_blank", "noopener,noreferrer");
+        closeModal();
+    });
+
+    const newCancelBtn = cancelBtn.cloneNode(true);
+    cancelBtn.parentNode.replaceChild(newCancelBtn, cancelBtn);
+    newCancelBtn.addEventListener("click", closeModal);
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+    if (!document.getElementById("channel-link-style")) {
+        const style = document.createElement("style");
+        style.id = "channel-link-style";
+        style.textContent = `
+            .channel-link {
+                color: var(--lens-color, #00b22d);
+                font-weight: 700;
+                text-decoration: none;
+            }
+            .channel-link:hover {
+                text-decoration: underline;
+            }
+        `;
+        document.head.appendChild(style);
+    }
+
+    const btnVideo = document.getElementById("modeSwitcher");
+    const lightbox = document.getElementById("lightbox");
+    const lightboxImg = document.getElementById("lightboxImg");
+
+    if (btnVideo) {
+        btnVideo.addEventListener("click", () => {
+            if (currentMode === "photo") {
+                currentMode = "video";
+                btnVideo.innerText = "Photo";
+                btnVideo.classList.add("active-mode");
+            } else {
+                currentMode = "photo";
+                btnVideo.innerText = "Video";
+                btnVideo.classList.remove("active-mode");
+            }
+            
+            page = 1;
+            gallery.innerHTML = "";
+            triggerFetch();
+        });
+    }
+
+    gallery.addEventListener("click", (e) => {
+        if (e.target.closest(".channel-link")) {
+            e.stopPropagation();
+            return;
+        }
+
+        const videoCard = e.target.closest(".video-card");
+        if (videoCard && currentMode === "video") {
+            e.stopPropagation();
+
+            const isExternal = videoCard.getAttribute("data-external-link") === "true";
+            const videoUrl = videoCard.getAttribute("data-video");
+
+            if (isExternal) {
+                showYouTubeConfirmModal(videoUrl, videoCard.getAttribute("data-provider") || "YouTube");
+                return;
+            }
+
+            const safeVideoUrl = getSanitizedMediaUrl(videoUrl);
+            if (!safeVideoUrl) {
+                console.warn("Video source ditolak: URL tidak valid atau tidak aman.", videoUrl);
+                return;
+            }
+
+            if (lightboxImg) lightboxImg.style.display = "none";
+
+            let videoPlayer = document.getElementById("lightboxVideo");
+            if (!videoPlayer) {
+                videoPlayer = document.createElement("video");
+                videoPlayer.id = "lightboxVideo";
+                videoPlayer.controls = true;
+                videoPlayer.autoplay = true;
+                videoPlayer.style.maxWidth = "100%";
+                videoPlayer.style.maxHeight = "80vh";
+                lightbox.appendChild(videoPlayer);
+            }
+
+            videoPlayer.style.display = "block";
+            videoPlayer.src = safeVideoUrl;
+            lightbox.classList.add("open");
+        }
+    });
+
+    const closeAndStopVideo = () => {
+        const videoPlayer = document.getElementById("lightboxVideo");
+        if (videoPlayer) {
+            videoPlayer.pause();
+            videoPlayer.src = "";
+            videoPlayer.style.display = "none";
+        }
+        if (lightboxImg) lightboxImg.style.display = "block"; 
+    };
+
+    const closeBtn = document.getElementById("closeLightbox");
+    if(closeBtn) closeBtn.addEventListener("click", closeAndStopVideo);
+    
+    if(lightbox) {
+        lightbox.addEventListener("click", (e) => {
+            if (e.target === lightbox) closeAndStopVideo();
+        });
+    }
+
+    document.addEventListener("keydown", (e) => {
+        if (e.key === "Escape" && lightbox && lightbox.classList.contains("open")) {
+            closeAndStopVideo();
+            lightbox.classList.remove("open");
+        }
+    });
+});

@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>Media Resolver 🔗 - SwitchLens</title>
+  <meta name="description" content="Ambil foto dan video dari tautan Pinterest, X, Pixiv, Bilibili, dan Instagram dengan aman melalui SwitchLens.">
+  <meta name="robots" content="noindex, nofollow">
+  <link rel="canonical" href="https://switchlens.vercel.app/resolve.html">
+
+  <link rel="icon" type="image/png" href="/icons/favicon-96x96.png" sizes="96x96" />
+  <link rel="icon" type="image/svg+xml" href="/icons/favicon.svg" />
+  <link rel="shortcut icon" href="/icons/favicon.ico" />
+  <link rel="apple-touch-icon" sizes="180x180" href="/icons/apple-touch-icon.png" />
+  <meta name="apple-mobile-web-app-title" content="SwitchLens" />
+  <link rel="manifest" href="/icons/site.webmanifest" />
+
+  <link rel="stylesheet" href="css/home.css" type="text/css" media="all" />
+  <link rel="stylesheet" href="css/resolve.css" type="text/css" media="all" />
+</head>
+
+<body data-theme="light">
+<header>
+  <nav>
+    <a href="home.html" class="logo-container">
+      <span class="logo1">Switch</span><span class="logo2">Lens</span>
+    </a>
+    <div class="navContainerBtn">
+      <div id="authNavSlot"></div>
+      <a href="home.html" class="btnVideo">Kembali ke Beranda</a>
+    </div>
+  </nav>
+</header>
+
+<main class="main-container rs-main">
+  <section class="rs-hero" aria-labelledby="rsTitle">
+    <h1 id="rsTitle" class="subJudul rs-title">Media Resolver 🔗</h1>
+    <p class="rs-lead">Tempel tautan postingan, lalu ambil foto atau video aslinya. Semua file melewati proxy bertanda tangan milik SwitchLens.</p>
+  </section>
+
+  <section class="rs-panel" aria-label="Form resolve">
+    <div id="rsGate" class="rs-gate" hidden></div>
+
+    <div id="rsForm" hidden>
+      <label for="rsInput" class="rs-label">Tautan (maksimal <span id="rsMaxBatch">5</span>, satu per baris)</label>
+      <textarea id="rsInput" class="rs-input" rows="4" spellcheck="false" autocomplete="off" autocapitalize="off" placeholder="https://www.pinterest.com/pin/...&#10;https://x.com/user/status/..."></textarea>
+
+      <div class="rs-detect" id="rsDetect" aria-live="polite"></div>
+
+      <div class="rs-actions">
+        <button type="button" id="rsPaste" class="rs-btn rs-btn-ghost">📋 Tempel</button>
+        <button type="button" id="rsClear" class="rs-btn rs-btn-ghost">Bersihkan</button>
+        <button type="button" id="rsSubmit" class="rs-btn rs-btn-primary">Resolve</button>
+      </div>
+
+      <label class="rs-consent" id="rsConsentRow" hidden>
+        <input type="checkbox" id="rsConsent">
+        <span>Saya memahami bahwa konten adalah milik pembuat aslinya dan akan menggunakannya sesuai hak cipta serta ketentuan platform sumber.</span>
+      </label>
+    </div>
+
+    <div class="rs-platforms" id="rsPlatforms" aria-label="Platform yang didukung"></div>
+  </section>
+
+  <section id="rsResults" class="rs-results" aria-live="polite" aria-busy="false"></section>
+
+  <section class="rs-history" id="rsHistorySection" hidden>
+    <div class="rs-history-head">
+      <h2 class="rs-h2">Riwayat</h2>
+      <button type="button" id="rsHistoryClear" class="rs-btn rs-btn-ghost rs-btn-sm">Hapus riwayat</button>
+    </div>
+    <ul id="rsHistoryList" class="rs-history-list"></ul>
+  </section>
+</main>
+
+<div id="rsPreview" class="rs-modal" role="dialog" aria-modal="true" aria-label="Pratinjau media" hidden>
+  <button type="button" id="rsPreviewClose" class="rs-modal-close" aria-label="Tutup pratinjau">&times;</button>
+  <div id="rsPreviewBody" class="rs-modal-body"></div>
+</div>
+
+<div class="token-modal" id="messageModal">
+    <div class="modal-box" style="text-align: center; max-width: 380px; padding: 30px 25px;">
+        <h2 id="messageTitle" style="color: var(--text-primary); margin-bottom: 12px; font-size: 1.4rem;">Pemberitahuan</h2>
+        <p id="messageBody" style="font-size: 0.95rem; color: var(--text-secondary); margin-bottom: 25px; line-height: 1.6;">Pesan di sini</p>
+        <button id="closeMessageBtn">Tutup</button>
+    </div>
+</div>
+
+<script src="js/auth.js" defer></script>
+<script src="js/config.js" defer></script>
+<script src="js/resolve.js" defer></script>
+<script src="js/register-sw.js" defer></script>
+</body>
+</html>
