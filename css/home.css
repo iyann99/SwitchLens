@@ -1029,6 +1029,18 @@ footer {
     background-color: #00a1d6;
 }
 
+.provider-filter-btn[data-provider="Openverse"] {
+    background-color: #9333ea;
+}
+
+.provider-filter-btn[data-provider="Wallhaven"] {
+    background-color: #475569;
+}
+
+.provider-filter-btn[data-provider="Danbooru"] {
+    background-color: #d97706;
+}
+
 .provider-filter-btn[data-provider="NASA"] {
     background-color: #0b3d91;
 }

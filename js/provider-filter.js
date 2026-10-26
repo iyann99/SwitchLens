@@ -32,6 +32,10 @@ function applyProviderFilterToGallery() {
 
         card.style.display = disabled.includes(provider) ? "none" : "";
     });
+
+    if (typeof clearGalleryNotice === "function" && typeof countVisibleCards === "function" && countVisibleCards() > 0) {
+        clearGalleryNotice("filter");
+    }
 }
 
 document.addEventListener("DOMContentLoaded", () => {

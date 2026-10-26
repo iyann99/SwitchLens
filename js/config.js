@@ -116,28 +116,53 @@ function countVisibleCards() {
     return Array.from(gallery.querySelectorAll('.media-card')).filter(card => card.style.display !== 'none').length;
 }
 
+function showAllHiddenNotice() {
+    renderGalleryMessage('Semua hasil disembunyikan oleh filter sumber.', {
+        kind: 'filter',
+        action: {
+            label: 'Tampilkan semua sumber',
+            handler: () => {
+                saveDisabledProviders([]);
+                applyProviderFilterToGallery();
+                clearGalleryNotice();
+                hasMore = true;
+                emptyStreak = 0;
+                setLoaderVisible(true);
+                if (typeof rewatchLoader === 'function') rewatchLoader();
+            }
+        }
+    });
+}
+
 function registerPageResult(addedVisible) {
     if (addedVisible > 0) {
         emptyStreak = 0;
     } else {
         emptyStreak += 1;
+        if (countVisibleCards() === 0 && gallery.querySelector('.media-card')) {
+            endPagination();
+            showAllHiddenNotice();
+            return;
+        }
         if (emptyStreak >= MAX_EMPTY_STREAK) endPagination();
     }
     if (hasMore && typeof rewatchLoader === 'function') rewatchLoader();
 }
 
-function clearGalleryNotice() {
+function clearGalleryNotice(kind) {
     if (!gallery) return;
-    gallery.querySelectorAll('.gallery-notice').forEach(node => node.remove());
+    const selector = kind ? `.gallery-notice[data-kind="${kind}"]` : '.gallery-notice';
+    gallery.querySelectorAll(selector).forEach(node => node.remove());
 }
 
-function renderGalleryMessage(text, { retry = false, replace = false } = {}) {
+function renderGalleryMessage(text, { retry = false, replace = false, action = null, kind = '' } = {}) {
     if (!gallery) return;
     if (replace) gallery.innerHTML = '';
     clearGalleryNotice();
 
     const notice = document.createElement('div');
     notice.className = 'gallery-notice';
+    if (kind) notice.setAttribute('data-kind', kind);
 
     const message = document.createElement('p');
     message.textContent = text;
@@ -150,6 +175,15 @@ function renderGalleryMessage(text, { retry = false, replace = false } = {}) {
         retryBtn.textContent = 'Coba lagi';
         retryBtn.addEventListener('click', retryLoad);
         notice.appendChild(retryBtn);
+    }
+
+    if (action) {
+        const actionBtn = document.createElement('button');
+        actionBtn.type = 'button';
+        actionBtn.className = 'gallery-retry';
+        actionBtn.textContent = action.label;
+        actionBtn.addEventListener('click', action.handler);
+        notice.appendChild(actionBtn);
     }
 
     gallery.appendChild(notice);
