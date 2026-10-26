@@ -57,7 +57,6 @@
 - 🐞 Hasil pencarian lama bisa menimpa pencarian baru (race condition) pada galeri foto/video; kini memakai penanda generasi.
 - 🐞 Kuota habis (`429`) sebelumnya tampil sebagai "tidak ada foto/video"; kini menampilkan pesan kuota.
 - 🐞 Fungsi kuota gratis terdefinisi ganda di `config.js` dan teks "100 konten" tidak sesuai konstanta; dirapikan.
-- 🐞 `deploy-cf.sh`: perbandingan pilihan mode kini aman untuk input non-angka, dan `keep_bindings` mencegah secret ikut terhapus saat deploy via REST API.
 
 </details>
 
