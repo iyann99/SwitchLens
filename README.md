@@ -49,8 +49,7 @@
 - 🛡️ Header keamanan tambahan di semua respons Worker (`X-Content-Type-Options`, `Referrer-Policy`, `Cache-Control: no-store` untuk JSON, CSP sandbox untuk media), `X-Request-Id` per permintaan, dan CORS `Max-Age`/`Expose-Headers`.
 
 **Perbaikan Bug**
-- 🐞 Error `500` di Worker sebelumnya ditelan tanpa log; kini dicatat terstruktur (JSON) dengan `requestId`.
-- 🐞 Rate limit fallback KV menggeser jendela waktu setiap permintaan sehingga tidak pernah reset; kini memakai jendela tetap.
+- 🐞 Beberapa perbaikan pada **Worker**
 - 🐞 Tombol **Bagikan** ikut membuka lightbox karena handler tidak berhenti; pesan error berjudul "Berhasil!" pada kegagalan share juga diperbaiki, dan pembatalan share tidak lagi dianggap error.
 - 🐞 File unduhan galeri tersimpan **tanpa ekstensi**; kini ekstensi ditentukan dari Content-Type/URL.
 - 🐞 `favorites.html` memuat `config.js` sebelum `auth.js`, sehingga halaman rusak untuk pengguna dengan Advanced Search aktif (`isLoggedIn` belum terdefinisi). Urutan diperbaiki dan `config.js` kini defensif.
