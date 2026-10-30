@@ -1,5 +1,5 @@
 
-const CACHE_NAME = "switchlens-cache-v6.4";
+const CACHE_NAME = "switchlens-cache-v6.5";
 
 const STATIC_ASSETS = [
   "/home.html",
@@ -9,6 +9,7 @@ const STATIC_ASSETS = [
   "/login.html",
   "/register.html",
   "/resolve.html",
+  "/ai-search.html",
   "/icons/site.webmanifest",
 
   "/js/config.js",
@@ -19,8 +20,11 @@ const STATIC_ASSETS = [
   "/js/landing.js",
   "/js/guide.js",
   "/js/auth.js",
-  "/js/turnstile.js",
   "/js/resolve.js",
+  "/js/turnstile.js",
+  "/js/ai-search.js",
+  "/js/provider-filter.js",
+  "/js/floating-search.js",
   "/js/search-history.js",
   "/js/slider.js",
   "/js/register-sw.js",
@@ -100,10 +104,10 @@ self.addEventListener("fetch", (event) => {
     event.respondWith(
       fetch(event.request)
         .then((networkResponse) => {
-          return caches.open(CACHE_NAME).then((cache) => {
-            cache.put(event.request, networkResponse.clone());
-            return networkResponse;
-          });
+          if (!networkResponse || !networkResponse.ok) return networkResponse;
+          const copy = networkResponse.clone();
+          caches.open(CACHE_NAME).then((cache) => cache.put(event.request, copy));
+          return networkResponse;
         })
         .catch(() => {
           return caches.match(event.request).then((cachedResponse) => {
