@@ -2,15 +2,14 @@
 
 <img src="https://capsule-render.vercel.app/api?type=waving&color=0:00b22d,100:0a3d2c&height=200&section=header&text=SwitchLens&fontSize=60&fontColor=ffffff&animation=fadeIn&fontAlignY=38&desc=Multi-Source%20Media%20Discovery%20Platform&descAlignY=58&descSize=18" width="100%"/>
 
-<a href="https://switchlens.vercel.app">
-  <img src="https://readme-typing-svg.demolab.com?font=Poppins&weight=600&size=22&pause=1000&color=00B22D&center=true&vCenter=true&width=700&lines=Cari+foto+%26+video+dari+7+sumber+sekaligus;Pexels+%C2%B7+Pixabay+%C2%B7+Unsplash+%C2%B7+Wikimedia+%C2%B7+Pinterest+%C2%B7+Bing+%C2%B7+YouTube;Ditemani+Smart+Search+AI%2C+disimpan+ke+akunmu." alt="Typing SVG" />
+<a href="https://switchlens.my.id">
+  <img src="https://readme-typing-svg.demolab.com?font=Poppins&weight=600&size=22&pause=1000&color=00B22D&center=true&vCenter=true&width=700&lines=Cari+foto+%26+video+dari+12+sumber+sekaligus;Pexels+%C2%B7+Pixabay+%C2%B7+Unsplash+%C2%B7+Wikimedia+%C2%B7+NASA+%C2%B7+Pinterest+%C2%B7+YouTube;Ditemani+Smart+Search+AI%2C+disimpan+ke+akunmu." alt="Typing SVG" />
 </a>
 
 <br/>
 
-[![Live Demo](https://img.shields.io/badge/Live-switchlens.vercel.app-00b22d?style=for-the-badge&logo=vercel&logoColor=white)](https://switchlens.vercel.app)
+[![Live Demo](https://img.shields.io/badge/Live-switchlens.my.id-00b22d?style=for-the-badge&logo=vercel&logoColor=white)](https://switchlens.my.id)
 [![Made with](https://img.shields.io/badge/Made%20with-JavaScript-f7df1e?style=for-the-badge&logo=javascript&logoColor=black)]()
-[![Backend](https://img.shields.io/badge/Backend-Cloudflare%20Workers-f38020?style=for-the-badge&logo=cloudflare&logoColor=white)]()
 [![Database](https://img.shields.io/badge/Database-Supabase-3ecf8e?style=for-the-badge&logo=supabase&logoColor=white)]()
 [![AI](https://img.shields.io/badge/AI-Gemini%20%2B%20GPT--4o--mini-8e44ad?style=for-the-badge&logo=googlegemini&logoColor=white)]()
 [![PWA](https://img.shields.io/badge/PWA-Ready-5A0FC8?style=for-the-badge&logo=pwa&logoColor=white)]()
@@ -21,41 +20,40 @@
 
 ## 📸 Tentang SwitchLens
 
-**SwitchLens** adalah dashboard penjelajah aset visual yang menggabungkan hasil pencarian dari **tujuh sumber sekaligus**, dengan **Pexels dan Pixabay sebagai dua sumber inti** sejak versi pertama (porsi hasil terbanyak di setiap pencarian), didampingi Unsplash dan Wikimedia Commons di mode standar, serta Pinterest, Bing Image, dan YouTube sebagai perluasan opsional lewat Advanced Search — semuanya digabung ke dalam satu galeri terpadu. Dilengkapi **Smart Search AI**, asisten obrolan berbasis Gemini (dengan fallback GPT-4o-mini) yang bisa menerjemahkan permintaan santai pengguna menjadi pencarian gambar yang relevan. Dibangun murni dengan Vanilla JavaScript tanpa framework, ditenagai oleh Cloudflare Workers sebagai *secure backend proxy*, dan Supabase sebagai lapisan otentikasi serta penyimpanan koleksi pengguna.
+**SwitchLens** adalah dashboard penjelajah aset visual yang menggabungkan hasil pencarian dari **banyak sumber sekaligus** dalam satu galeri terpadu. **Pexels dan Pixabay** menjadi dua sumber inti sejak versi pertama, didampingi Unsplash, Wikimedia Commons, dan NASA Image and Video Library di mode standar. Lewat **Advanced Search**, pengguna yang login dapat memperluas pencarian ke Pinterest, Bing Image, Pixiv, Wallhaven, Danbooru, YouTube, dan Bilibili.
 
-🔗 **Coba langsung:** [switchlens.vercel.app](https://switchlens.vercel.app)
+Dilengkapi **Smart Search AI** (Gemini dengan fallback GPT-4o-mini) yang menerjemahkan permintaan santai menjadi pencarian gambar yang relevan, serta **Media Resolver** untuk pratinjau dan unduhan media dari tautan postingan. Frontend dibangun murni dengan Vanilla JavaScript tanpa framework; autentikasi dan penyimpanan koleksi memakai Supabase.
+
+🔗 **Coba langsung:** [switchlens.my.id](https://switchlens.my.id)
 
 ---
 
 ## 🆕 Changelog
 
 <details open>
-<summary><strong>v5.0.2 — Media Resolver & Hardening Enterprise</strong></summary>
+<summary><strong>v5.0.2 — Sumber Baru, Media Resolver & Stabilitas</strong></summary>
 <br>
 
 **Fitur Baru**
-- 🌐 **Pixiv & Bilibili masuk Advanced Search** — dicari langsung oleh Worker (tanpa API pihak ketiga) dan tampil di beranda, pencarian, serta Smart Search AI, hanya untuk pengguna login dengan Advanced Search aktif. **Pixiv** (foto) memakai ranking harian untuk beranda dan pencarian tag untuk query, selalu mode aman (konten R-18, ugoira, dan konten sensitif disaring). Gambarnya disajikan lewat proxy bertanda tangan permanen per-gambar karena CDN Pixiv menolak hotlink tanpa `Referer`; URL-nya stabil, jadi tetap valid untuk favorit dan riwayat chat AI. **Bilibili** (video) memakai daftar populer untuk beranda dan pencarian bertanda tangan WBI untuk query; video dibuka di Bilibili dengan konfirmasi, seperti YouTube. Hasil di-cache 10 menit dan dilindungi circuit breaker per sumber.
-- 🔗 **Media Resolver** (`resolve.html`, `js/resolve.js`, `css/resolve.css`) — tempel tautan postingan (maksimal 5 sekaligus) dari **Pinterest, X (Twitter), Pixiv, Bilibili, Instagram (beta)**, lalu pratinjau dan unduh foto/video aslinya. Hanya untuk pengguna login; persetujuan hak cipta dicatat sekali.
-- 🔏 **Media proxy bertanda tangan** (`GET /media`) — setiap URL media dari resolver ditandatangani HMAC-SHA256 dengan masa berlaku 1 jam, sehingga proxy tidak bisa dipakai sebagai open proxy. Header `Referer` yang dibutuhkan CDN (Pixiv, Bilibili) ditambahkan di sisi Worker.
-- 🩺 **`GET /health`** dan **`GET /resolve/providers`** — status versi, fitur aktif, dan kondisi tiap provider.
-- ⚡ **Cache hasil resolve** (KV, 15 menit) dan **circuit breaker per provider** (5 kegagalan berturut-turut → jeda 5 menit) agar satu sumber yang bermasalah tidak membebani yang lain.
-- 📊 **Kuota terpisah** untuk resolver (per IP dan per akun), unduhan, dan media, dengan header `Retry-After` pada respons `429`.
+- 🔗 **Media Resolver** (`resolve.html`) — tempel tautan postingan (maksimal 5 sekaligus) dari **Pinterest, X (Twitter), Pixiv, Bilibili, dan Instagram (beta)**, lalu pratinjau dan unduh foto/video aslinya. Hanya untuk pengguna login; persetujuan hak cipta dicatat sekali.
+- 🌐 **Sumber baru di Advanced Search** — **Pixiv** dan **Bilibili**, serta **Wallhaven** (wallpaper, hanya konten aman) dan **Danbooru** (ilustrasi anime, hanya rating umum). **Openverse** (gambar berlisensi terbuka) tersedia sebagai sumber opsional. Seluruhnya muncul di beranda, pencarian, dan Smart Search AI, serta dapat disaring lewat Provider Filter.
+- 🔐 **Verifikasi keamanan yang lebih jelas** — widget verifikasi di halaman masuk dan daftar dimuat secara manual, menampilkan kode kesalahan yang bisa ditindaklanjuti, membatasi percobaan ulang otomatis, dan menyediakan tombol **Coba lagi**.
+- 🎚️ **Pesan filter sumber** — saat semua hasil tersembunyi oleh Provider Filter, galeri kini menampilkan penjelasan beserta tombol **Tampilkan semua sumber**, bukan halaman kosong.
 - 📈 **Progres unduhan** (ukuran/persen) pada tombol Unduh galeri.
-
-**Keamanan**
-- 🛡️ **Guard SSRF** — semua fetch sisi server memakai `fetchWithGuard`: HTTPS saja, allowlist host exact/subdomain, redirect diikuti manual dan divalidasi di setiap lompatan, timeout, serta batas ukuran respons.
-- 🛡️ **`/download` kini tidak mengikuti redirect ke host di luar allowlist**, dibatasi 300 MB, mendukung `Range`, menolak tipe konten aktif (HTML/SVG/XML/JSON), dan terkena rate limit.
-- 🛡️ **Validasi input favorit** — `type` dibatasi `photo`/`video`, URL wajib `http(s)`, panjang teks dibatasi; mencegah URL `javascript:` tersimpan di database.
-- 🛡️ Header keamanan tambahan di semua respons Worker (`X-Content-Type-Options`, `Referrer-Policy`, `Cache-Control: no-store` untuk JSON, CSP sandbox untuk media), `X-Request-Id` per permintaan, dan CORS `Max-Age`/`Expose-Headers`.
+- 🌍 **Domain baru** `switchlens.my.id`; seluruh tautan kanonis, Open Graph, sitemap, dan robots diperbarui.
+- 🧭 **Landing page diperbarui** — menampilkan Smart Search AI, Advanced Search, Media Resolver, dan Filter Sumber.
 
 **Perbaikan Bug**
-- 🐞 Beberapa perbaikan pada **Worker**
+- 🐞 **Loading tanpa batas** — permintaan kini memiliki batas waktu; saat gagal tampil pesan dengan tombol **Coba lagi**, dan pemuatan otomatis berhenti ketika hasil habis atau beberapa halaman berturut-turut kosong.
+- 🐞 **Pencarian lambat** — satu sumber yang macet tidak lagi menahan seluruh hasil pencarian.
+- 🐞 **Pratinjau Instagram pecah** di Media Resolver — gambar yang gagal dimuat kini diganti penanda, dan pengambilan media Instagram lebih tangguh.
 - 🐞 Tombol **Bagikan** ikut membuka lightbox karena handler tidak berhenti; pesan error berjudul "Berhasil!" pada kegagalan share juga diperbaiki, dan pembatalan share tidak lagi dianggap error.
-- 🐞 File unduhan galeri tersimpan **tanpa ekstensi**; kini ekstensi ditentukan dari Content-Type/URL.
-- 🐞 `favorites.html` memuat `config.js` sebelum `auth.js`, sehingga halaman rusak untuk pengguna dengan Advanced Search aktif (`isLoggedIn` belum terdefinisi). Urutan diperbaiki dan `config.js` kini defensif.
+- 🐞 File unduhan galeri tersimpan **tanpa ekstensi**; kini ekstensi ditentukan dari tipe konten/URL.
+- 🐞 `favorites.html` memuat `config.js` sebelum `auth.js`, sehingga halaman rusak untuk pengguna dengan Advanced Search aktif. Urutan diperbaiki dan `config.js` kini defensif.
 - 🐞 Hasil pencarian lama bisa menimpa pencarian baru (race condition) pada galeri foto/video; kini memakai penanda generasi.
-- 🐞 Kuota habis (`429`) sebelumnya tampil sebagai "tidak ada foto/video"; kini menampilkan pesan kuota.
+- 🐞 Kuota habis sebelumnya tampil sebagai "tidak ada foto/video"; kini menampilkan pesan kuota.
 - 🐞 Fungsi kuota gratis terdefinisi ganda di `config.js` dan teks "100 konten" tidak sesuai konstanta; dirapikan.
+- 🐞 **Service Worker** — daftar aset offline dilengkapi (Smart Search AI, filter sumber, pencarian mengambang), dan respons error tidak lagi tersimpan di cache.
 
 </details>
 
@@ -66,11 +64,11 @@
 **Keamanan (CodeQL)**
 - 🛡️ **DOM XSS pada pemutar media** (`video.js`, `button.js`) — URL video/foto resolusi tinggi yang diambil dari atribut `data-*` kini divalidasi (`isSafeMediaUrl`) sebelum di-assign ke `.src`; hanya URL berprotokol `http:`/`https:` yang diteruskan.
 - 🛡️ **HTML injection pada modal API Key** (`config.js`) — nilai token Pexels/Pixabay kini di-escape (`escapeHtml`) sebelum disisipkan ke `innerHTML` modal.
-- 🛡️ **Incomplete URL substring sanitization** (`sw.js`) — pengecekan domain dinamis (`pexels.com`, `pixabay.com`, `unsplash.com`, `workers.dev`) yang sebelumnya memakai `hostname.includes()` (rentan dilewati domain seperti `notpexels.com.evil.net`) diganti dengan pencocokan exact-match/subdomain yang aman.
+- 🛡️ **Incomplete URL substring sanitization** (`sw.js`) — pengecekan domain dinamis (`pexels.com`, `pixabay.com`, `unsplash.com`, domain API) yang sebelumnya memakai `hostname.includes()` (rentan dilewati domain seperti `notpexels.com.evil.net`) diganti dengan pencocokan exact-match/subdomain yang aman.
 
 **Sesi & Autentikasi**
 - 🔑 **Sesi kedaluwarsa tidak terdeteksi** (`auth.js`) — `isLoggedIn()` sebelumnya hanya memeriksa keberadaan token, bukan validitasnya. Kini token JWT di-decode untuk memeriksa klaim `exp`; sesi yang sudah habis masa berlakunya otomatis dibersihkan.
-- 🔑 **Permintaan ke Worker gagal diam-diam saat token kedaluwarsa** — seluruh pemanggilan endpoint terautentikasi (favorit, Smart Search AI) kini melalui `parseWorkerResponse()`, yang mendeteksi respons `401` dan menampilkan notifikasi "Sesi Berakhir" alih-alih gagal tanpa keterangan.
+- 🔑 **Permintaan ke server gagal diam-diam saat token kedaluwarsa** — seluruh pemanggilan endpoint terautentikasi (favorit, Smart Search AI) kini melalui fungsi pembaca respons terpusat, yang mendeteksi respons `401` dan menampilkan notifikasi "Sesi Berakhir" alih-alih gagal tanpa keterangan.
 - 🔑 **Toggle Advanced Search tidak persisten** (`config.js`) — status aktif/nonaktif sebelumnya hanya disimpan di variabel sementara dan reset setiap kali berpindah halaman. Kini disimpan di `localStorage`, sehingga status tetap konsisten antara `home.html` dan `ai-search.html`.
 - 🔑 **Duplikasi fungsi `isLoggedIn()`** — sebelumnya didefinisikan di dua file (`auth.js` dan `config.js`) dengan perilaku berbeda, dan pemenangnya bergantung pada urutan `<script>` di tiap halaman. Kini hanya satu definisi di `auth.js` sebagai sumber kebenaran tunggal.
 
@@ -81,7 +79,7 @@
 <br>
 
 - 🤖 **Smart Search AI** — asisten obrolan baru (`ai-search.html`) yang memahami permintaan bahasa natural pengguna dan otomatis memicu pencarian gambar yang relevan, lengkap dengan riwayat percakapan tersimpan per akun (Supabase).
-- 🧠 **AI Ganda dengan Fallback** — Gemini (`gemini-flash-latest`) sebagai model utama, otomatis beralih ke GPT-4o-mini apabila Gemini gagal atau kena limit, seluruhnya diproses di sisi Worker agar API key tidak pernah terekspos ke klien.
+- 🧠 **AI Ganda dengan Fallback** — Gemini (`gemini-flash-latest`) sebagai model utama, otomatis beralih ke GPT-4o-mini apabila Gemini gagal atau kena limit, seluruhnya diproses di sisi server agar API key tidak pernah terekspos ke klien.
 - 🗂️ **Riwayat Obrolan AI** — percakapan tersimpan di database, dapat dibuka kembali, dan dihapus melalui modal konfirmasi khusus.
 - 🖼️ **Integrasi Wikimedia Commons** — ditambahkan sebagai sumber keempat pada mode pencarian **standar** (bukan Advanced Search), karena berlisensi terbuka dan tidak memerlukan API key.
 - ⚖️ **Rebalance Round-Robin** — proporsi hasil per sumber disesuaikan ulang: mode standar kini menggabungkan Pexels, Pixabay, Unsplash & Wikimedia; mode Advanced menambahkan Pinterest & Bing di atasnya.
@@ -107,7 +105,7 @@
 <br>
 
 - Unsplash ditambahkan sebagai sumber foto ketiga (*round-robin* bersama Pexels & Pixabay).
-- Proxy download melalui Worker untuk mengatasi pembatasan CORS saat mengunduh berkas.
+- Proxy download di sisi server untuk mengatasi pembatasan CORS saat mengunduh berkas.
 - Kepatuhan penuh terhadap ketentuan atribusi & pelaporan penggunaan API Unsplash.
 - Perbaikan thumbnail video Pixabay yang sebelumnya tidak tampil.
 
@@ -119,7 +117,7 @@
 
 - Sistem akun penuh (login/register) melalui Supabase Auth.
 - Koleksi favorit dipindahkan dari `localStorage` ke database cloud, tersinkron di semua perangkat.
-- Rate limiting permintaan berbasis Cloudflare Workers KV.
+- Pembatasan laju permintaan di sisi server.
 - Riwayat pencarian dengan dukungan *export/import* JSON.
 - Navigasi menu mobile menggunakan model *slider* dua panel.
 
@@ -131,18 +129,16 @@
 
 | Kategori | Deskripsi |
 |---|---|
-| 🖼️ **Sumber Konten** | Tujuh penyedia media terintegrasi, digabung secara *round-robin* dalam satu galeri. **Pexels** dan **Pixabay** menjadi sumber inti sejak awal — masing-masing memasok porsi hasil terbanyak (6 gambar/permintaan di mode standar) berkat API key resmi dan katalog terbesar. **Unsplash** (5 gambar/permintaan) dan **Wikimedia Commons** (5 gambar/permintaan, publik tanpa API key) melengkapi mode standar. **Pinterest**, **Bing Image**, **Pixiv**, **YouTube**, dan **Bilibili** hanya aktif di Advanced Search. |
+| 🖼️ **Sumber Konten** | Pexels dan Pixabay sebagai sumber inti, didampingi Unsplash, Wikimedia Commons, dan NASA di mode standar. Pinterest, Bing Image, Pixiv, Wallhaven, Danbooru, YouTube, dan Bilibili aktif di Advanced Search. Semua digabung secara *round-robin* dalam satu galeri. |
 | 🤖 **Smart Search AI** | Asisten obrolan (Gemini, fallback GPT-4o-mini) yang memahami permintaan bahasa natural dan otomatis memicu pencarian gambar yang relevan, dengan riwayat percakapan tersimpan per akun. |
 | 🔐 **Akun & Favorit** | Login/registrasi melalui Supabase Auth; koleksi favorit tersimpan permanen di akun dan bisa diakses dari perangkat mana pun. |
-| 🔗 **Media Resolver** | Ambil media asli dari tautan Pinterest, X, Pixiv, Bilibili, dan Instagram (beta) melalui proxy bertanda tangan, lengkap dengan cache, circuit breaker, dan kuota terpisah. Hanya untuk pengguna login. |
-| 🛡️ **Advanced Search** | Sumber tambahan pihak ketiga (Pinterest, Bing, YouTube) hanya aktif melalui persetujuan eksplisit pengguna, disertai *disclaimer* tanggung jawab penggunaan konten. |
-| 🎚️ **Provider Filter** | Nonaktifkan sumber tertentu secara instan dari tampilan galeri tanpa perlu memuat ulang halaman. |
-| 🧠 **Hybrid API Auth** | Pengguna tanpa API key pribadi tetap bisa menjelajah Pexels & Pixabay melalui kuota gratis (rate-limited) via Worker; pengguna dengan API key sendiri mendapat akses tanpa batas. |
-| 🕓 **Riwayat Pencarian** | Tersimpan lokal, dapat diklik ulang, serta didukung *export/import* dalam format JSON. |
+| 🔗 **Media Resolver** | Ambil media asli dari tautan Pinterest, X, Pixiv, Bilibili, dan Instagram (beta). Hanya untuk pengguna login. |
+| 🛡️ **Advanced Search** | Sumber tambahan pihak ketiga hanya aktif melalui persetujuan eksplisit pengguna, disertai *disclaimer* tanggung jawab penggunaan konten. |
+| 🎚️ **Provider Filter** | Nonaktifkan sumber tertentu secara instan dari tampilan galeri tanpa memuat ulang halaman. |
+| 🧠 **Hybrid API Auth** | Pengguna tanpa API key pribadi tetap bisa menjelajah Pexels & Pixabay melalui kuota gratis; pengguna dengan API key sendiri mendapat akses tanpa batas. |
+| 🕓 **Riwayat Pencarian** | Tersimpan lokal, dapat diklik ulang, serta mendukung *export/import* JSON. |
 | 📲 **PWA Ready** | Dapat dipasang ke *home screen* dengan pengalaman *offline-first* dasar melalui Service Worker. |
-| 🧱 **Backend Proxy Shield** | Seluruh kredensial (API key, Service Role key, kunci AI) hanya berada di Cloudflare Worker — tidak pernah terekspos ke klien. |
-
-> **Proporsi hasil per pencarian (mode standar):** Pexels 6 · Pixabay 6 · Unsplash 5 · Wikimedia 5. Mode Advanced menyesuaikan ke Pexels 4 · Pixabay 4 · Unsplash 3 · Wikimedia 3 · Pinterest 3 · Bing 3, agar total hasil tetap seimbang setelah dua sumber tambahan masuk.
+| 🧱 **Kredensial Aman** | Seluruh kunci API dan rahasia hanya berada di sisi server, tidak pernah terekspos ke klien. |
 
 ---
 
@@ -153,7 +149,6 @@
 ![JavaScript](https://img.shields.io/badge/JavaScript-ES6+-F7DF1E?style=flat-square&logo=javascript&logoColor=black)
 ![HTML5](https://img.shields.io/badge/HTML5-E34F26?style=flat-square&logo=html5&logoColor=white)
 ![CSS3](https://img.shields.io/badge/CSS3-1572B6?style=flat-square&logo=css3&logoColor=white)
-![Cloudflare Workers](https://img.shields.io/badge/Cloudflare_Workers-F38020?style=flat-square&logo=cloudflare&logoColor=white)
 ![Supabase](https://img.shields.io/badge/Supabase-3ECF8E?style=flat-square&logo=supabase&logoColor=white)
 ![Vercel](https://img.shields.io/badge/Vercel-000000?style=flat-square&logo=vercel&logoColor=white)
 
@@ -163,13 +158,11 @@
 |---|---|
 | Frontend | Vanilla JavaScript (ES6+), HTML5, CSS3 Custom Properties — tanpa framework/build step |
 | Hosting Frontend | Vercel (static hosting) |
-| Backend / Proxy | Cloudflare Workers *(source terpisah, tidak termasuk repo ini)* |
-| Rate Limiting | Cloudflare Workers KV |
-| Auth & Database | Supabase (Auth + PostgreSQL, termasuk tabel `favorites`, `ai_conversations`, `ai_messages`) |
-| Sumber Media | **Pexels API** & **Pixabay API** (dua sumber inti, wajib API key), Unsplash API, Wikimedia Commons API (publik, tanpa key), serta layanan pencarian pihak ketiga (mode Advanced Search) |
-| AI Engine | Google Gemini (`gemini-flash-latest`) sebagai model utama, OpenAI GPT-4o-mini sebagai fallback otomatis |
+| Auth & Database | Supabase (Auth + PostgreSQL) |
+| AI Engine | Google Gemini sebagai model utama, OpenAI GPT-4o-mini sebagai fallback otomatis |
+| Sumber Media | Pexels, Pixabay, Unsplash, Wikimedia Commons, NASA, serta sumber tambahan di Advanced Search |
 
-> **Catatan:** Source code Cloudflare Worker (proxy media, proxy download, rate limiting, endpoint auth, favorit & AI chat) dikelola terpisah langsung di Cloudflare Dashboard dan **tidak disertakan** dalam repository ini karena berisi kredensial dan logic backend sensitif.
+> **Catatan:** Repository ini hanya berisi **frontend** SwitchLens. Layanan backend dikelola secara privat dan **tidak open-source**.
 
 ---
 
@@ -179,39 +172,35 @@
 SwitchLens/
 ├── assets/                    → Gambar, ikon, background
 ├── css/                       → Stylesheet per halaman
-│   ├── home.css
-│   ├── auth.css
-│   ├── guide.css
-│   ├── landing.css
-│   ├── ai-search.css          → Stylesheet halaman Smart Search AI
-│   └── resolve.css            → Stylesheet halaman Media Resolver
 ├── icons/                     → Ikon PWA & favicon
 ├── js/
-│   ├── auth.js                 → Login, register, manajemen sesi
-│   ├── config.js                → Konfigurasi umum, favorit, modal
-│   ├── main.js                   → Render galeri foto
-│   ├── video.js                   → Render galeri video
-│   ├── button.js                   → Interaksi tombol (like, download, share)
-│   ├── favorites.js                 → Halaman koleksi favorit
-│   ├── search-history.js             → Riwayat pencarian + export/import
-│   ├── slider.js                      → Navigasi swipe menu mobile
-│   ├── floating-search.js              → Search bar mengambang
-│   ├── provider-filter.js               → Filter sumber konten (client-side)
-│   ├── ai-search.js                      → Logika chat AI, riwayat obrolan, trigger pencarian
-│   ├── landing.js                         → Halaman landing
-│   ├── guide.js                            → Halaman panduan API key
-│   ├── resolve.js                           → Logika halaman Media Resolver
-│   └── register-sw.js                       → Registrasi service worker
-├── ai-search.html             → Halaman Smart Search AI (chat)
-├── favorites.html             → Halaman koleksi favorit
+│   ├── auth.js                → Login, register, manajemen sesi
+│   ├── turnstile.js           → Pemuat widget verifikasi keamanan
+│   ├── config.js              → Konfigurasi umum, favorit, modal
+│   ├── main.js                → Render galeri foto
+│   ├── video.js               → Render galeri video
+│   ├── button.js              → Interaksi tombol (like, download, share)
+│   ├── favorites.js           → Halaman koleksi favorit
+│   ├── search-history.js      → Riwayat pencarian + export/import
+│   ├── slider.js              → Navigasi swipe menu mobile
+│   ├── floating-search.js     → Search bar mengambang
+│   ├── provider-filter.js     → Filter sumber konten (client-side)
+│   ├── ai-search.js           → Chat AI, riwayat obrolan, trigger pencarian
+│   ├── resolve.js             → Halaman Media Resolver
+│   ├── landing.js             → Halaman landing
+│   ├── guide.js               → Halaman panduan API key
+│   └── register-sw.js         → Registrasi service worker
+├── ai-search.html             → Smart Search AI
+├── favorites.html             → Koleksi favorit
 ├── guide.html                 → Panduan mendapatkan API key
-├── home.html                  → Dashboard utama penjelajah
+├── home.html                  → Dashboard utama
 ├── index.html                 → Landing page
 ├── login.html                 → Halaman masuk
-├── register.html              → Halaman daftar akun
-├── resolve.html               → Halaman Media Resolver
+├── register.html              → Halaman daftar
+├── resolve.html               → Media Resolver
 ├── sw.js                      → Service worker (PWA)
-├── push.sh                    → Script automasi git add/commit/push interaktif
+├── sitemap.xml / robots.txt   → SEO
+├── push.sh                    → Script automasi git add/commit/push
 └── vercel.json                → Header keamanan & konfigurasi deploy
 ```
 
@@ -226,33 +215,7 @@ git clone https://github.com/iyann99/SwitchLens.git
 cd SwitchLens
 ```
 
-### 2. Siapkan Layanan Eksternal
-
-Karena source code Worker tidak disertakan dalam repo ini, siapkan sendiri infrastruktur backend berikut agar aplikasi berfungsi penuh:
-
-| Layanan | Kegunaan |
-|---|---|
-| **Cloudflare Worker** | Proxy ke seluruh sumber media, proxy download berkas, endpoint auth, favorit, dan endpoint AI chat |
-| **Cloudflare KV Namespace** | Rate limiting — cukup dibuat & di-*bind* lewat Dashboard, tanpa kode tambahan |
-| **Supabase Project** | Autentikasi (login/register) serta tabel `favorites`, `ai_conversations`, dan `ai_messages` |
-| **Pexels API** | Daftar di [pexels.com/api](https://www.pexels.com/api/) untuk mendapatkan API Key — sumber inti pertama, wajib diisi agar pencarian foto & video berjalan |
-| **Pixabay API** | Daftar di [pixabay.com/api/docs](https://pixabay.com/api/docs/) untuk mendapatkan API Key — sumber inti kedua, wajib diisi berdampingan dengan Pexels |
-| **Unsplash Application** | Daftar di [unsplash.com/developers](https://unsplash.com/developers) untuk mendapatkan Access Key |
-| **Google AI Studio (Gemini)** | Daftar di [aistudio.google.com](https://aistudio.google.com) untuk mendapatkan API key model `gemini-flash-latest` (AI utama) |
-| **OpenAI Platform** | Daftar di [platform.openai.com](https://platform.openai.com) untuk mendapatkan API key `gpt-4o-mini` sebagai fallback AI |
-
-**Secret tambahan untuk Media Resolver (v5.0.2):** buat string acak panjang lalu simpan sebagai secret Worker. Tanpa secret ini, endpoint `/resolve` dan `/media` mengembalikan `503 feature_disabled` dan halaman resolver menampilkan pemberitahuan.
-
-```bash
-openssl rand -hex 32
-npx wrangler secret put MEDIA_SIGNING_SECRET
-```
-
-Setelah deploy, verifikasi dengan `GET https://<worker>/health` — field `features.resolver` harus bernilai `true`. Mengganti secret akan membuat seluruh tautan media yang sedang beredar kedaluwarsa (aman, resolve ulang saja).
-
-> Wikimedia Commons **tidak memerlukan API key** — endpoint publiknya langsung dipanggil oleh Worker. Pexels dan Pixabay, sebaliknya, adalah sumber wajib: tanpa kedua key ini, hasil pencarian standar akan kehilangan porsi terbesarnya (masing-masing 6 dari total gambar per permintaan).
-
-### 3. Deploy Frontend
+### 2. Deploy Frontend
 
 Proyek ini adalah *static site* murni tanpa proses build, sehingga bisa langsung di-deploy ke **Vercel**:
 
@@ -260,6 +223,8 @@ Proyek ini adalah *static site* murni tanpa proses build, sehingga bisa langsung
 2. Root Directory: `./`
 3. Build Command, Output Directory, Install Command: **kosongkan semua**
 4. Deploy
+
+> Karena backend tidak disertakan, fitur pencarian, akun, favorit, AI, dan Media Resolver memerlukan layanan backend yang kompatibel. Alamat layanan diatur di `js/config.js`.
 
 ---
 
@@ -292,12 +257,13 @@ chmod +x push.sh   # sekali saja, agar bisa dieksekusi
 ## 🔐 Keamanan & Kepatuhan
 
 - Header keamanan (CSP, HSTS, X-Frame-Options, Permissions-Policy, dll) diterapkan melalui `vercel.json`.
-- Seluruh kredensial (API key Pexels/Pixabay/Unsplash, kunci Gemini & OpenAI, Supabase Service Role Key) disimpan **hanya di Cloudflare Worker**, tidak pernah terekspos ke sisi klien.
-- Autentikasi menggunakan JWT dari Supabase Auth, diverifikasi ulang oleh Worker pada setiap permintaan sensitif (favorit, mode Advanced Search, riwayat & percakapan AI).
-- Fitur Advanced Search (Pinterest, Bing Image, YouTube) memerlukan persetujuan eksplisit pengguna atas ketentuan penggunaan, karena sebagian sumber tidak selalu menyediakan metadata lisensi yang lengkap.
-- Smart Search AI hanya menerjemahkan permintaan pengguna menjadi *keyword* pencarian melalui fungsi `fetchPhotos()` yang sama dengan pencarian biasa — AI tidak menghasilkan gambar sendiri, dan tetap mengikuti mode standar/Advanced yang aktif di sisi klien.
-- Media Resolver hanya mengambil dari host provider yang ada di allowlist, memvalidasi setiap redirect, dan hanya menyajikan media melalui URL bertanda tangan HMAC dengan masa berlaku 1 jam.
-- Seluruh unduhan foto dan video diproksikan melalui Worker untuk menghindari pembatasan CORS, sekaligus memenuhi kewajiban atribusi dan pelaporan penggunaan sesuai ketentuan API Unsplash & Wikimedia Commons.
+- Seluruh kredensial dan kunci API disimpan **hanya di sisi server**, tidak pernah terekspos ke klien.
+- Autentikasi menggunakan JWT dari Supabase Auth, diverifikasi ulang pada setiap permintaan sensitif (favorit, Advanced Search, riwayat & percakapan AI).
+- Widget verifikasi keamanan melindungi halaman masuk dan daftar.
+- Advanced Search memerlukan persetujuan eksplisit pengguna atas ketentuan penggunaan, karena sebagian sumber tidak selalu menyediakan metadata lisensi yang lengkap. Wallhaven dan Danbooru hanya menampilkan konten yang aman.
+- Smart Search AI hanya menerjemahkan permintaan pengguna menjadi *keyword* pencarian; AI tidak menghasilkan gambar sendiri dan tetap mengikuti mode standar/Advanced yang aktif.
+- Media Resolver hanya melayani media dari provider yang didukung, melalui tautan yang kedaluwarsa dalam waktu singkat.
+- Unduhan dilayani lewat lapisan keamanan khusus, sekaligus memenuhi kewajiban atribusi sesuai ketentuan Unsplash & Wikimedia Commons.
 
 ---
 
