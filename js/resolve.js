@@ -240,6 +240,10 @@
             img.alt = "";
             img.loading = "lazy";
             img.referrerPolicy = "no-referrer";
+            img.addEventListener("error", () => {
+                const placeholder = el("div", "rs-thumb rs-thumb-empty", result.type === "video" ? "🎬" : "🖼️");
+                img.replaceWith(placeholder);
+            }, { once: true });
             img.src = result.thumbnail;
             card.appendChild(img);
         } else {
